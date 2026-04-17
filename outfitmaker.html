@@ -130,20 +130,17 @@
       position: sticky;
       top: 48px;
       z-index: 20;
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 18px;
-      margin-bottom: 12px;
+      padding: 10px 0 6px;
+      margin-bottom: 8px;
       display: grid;
       place-items: center;
     }
     .mode-cycle-btn {
-      border: 2px solid #000;
-      border-radius: 999px;
-      background: #fff;
-      color: #000;
-      padding: 10px 36px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--fg);
+      padding: 0;
       cursor: pointer;
       font-weight: 800;
       font-size: 36px;
@@ -418,6 +415,55 @@
       max-height: 90vh;
       padding: 16px;
     }
+    #settingsDialog {
+      width: 100vw;
+      max-width: 100vw;
+      max-height: 100vh;
+      height: 100vh;
+      border-radius: 0;
+      margin: 0;
+      padding: 20px;
+    }
+    .weather-btn {
+      background: transparent;
+      border: 0;
+      font-weight: 700;
+      cursor: pointer;
+      color: inherit;
+      padding: 0;
+      text-align: left;
+    }
+    .weather-app-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .weather-hero {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      background: linear-gradient(140deg, #85b6ff, #dce9ff);
+      color: #0d2340;
+      position: relative;
+      overflow: hidden;
+    }
+    .weather-hero::after {
+      content: "";
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      top: -24px;
+      right: -24px;
+      background: rgba(255,255,255,0.5);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { transform: scale(1); opacity: .7; }
+      50% { transform: scale(1.14); opacity: 1; }
+    }
 
     dialog::backdrop { background: rgba(0,0,0,0.4); }
   </style>
@@ -425,20 +471,20 @@
 <body>
   <div class="app-shell">
     <div class="top-strip">
-      <div id="weather">🌦️ Időjárás betöltése...</div>
+      <button id="weatherBtn" class="weather-btn">🌦️ <span id="weather">Időjárás betöltése...</span></button>
       <div id="clock">--:--:--</div>
     </div>
 
     <section id="communityPage" class="page">
-      <h1>Community</h1>
+      <h1 data-i18n="community_title">Community</h1>
       <div class="section-block">
-        <p>Ez a rész később készül el.</p>
-        <p class="muted">A nézet most teljes szélességű.</p>
+        <p data-i18n="community_soon">Ez a rész később készül el.</p>
+        <p class="muted" data-i18n="community_full">A nézet most teljes szélességű.</p>
       </div>
     </section>
 
     <section id="plannerPage" class="page">
-      <h1>Planner</h1>
+      <h1 data-i18n="planner_title">Planner</h1>
       <div class="planner-layout">
         <div class="planner-toolbar">
           <input id="plannerMonth" type="month" />
@@ -448,18 +494,17 @@
     </section>
 
     <section id="stylingPage" class="page active">
+      <h1 data-i18n="styling_title">Styling</h1>
       <div class="mode-cycle-wrap">
         <button class="mode-cycle-btn" id="modeCycleBtn">3 RÉSZES</button>
       </div>
-
-      <h1>Styling</h1>
       <div class="section-block">
-        <p>A generált ruhák egymás alatt, nagy képekkel jelennek meg.</p>
+        <p data-i18n="styling_desc">A generált ruhák egymás alatt, nagy képekkel jelennek meg.</p>
         <div class="row">
-          <button class="btn" id="generateBtn">🎯 Outfit generálás</button>
-          <button class="btn ghost" id="likeOutfitBtn">❤️ Outfit like</button>
+          <button class="btn" id="generateBtn" data-i18n="generate">🎯 Outfit generálás</button>
+          <button class="btn ghost" id="likeOutfitBtn" data-i18n="outfit_like">❤️ Outfit like</button>
           <input id="plannerDate" type="date" />
-          <button class="btn ghost" id="savePlannerBtn">Mentés a Plannerbe</button>
+          <button class="btn ghost" id="savePlannerBtn" data-i18n="save_planner">Mentés a Plannerbe</button>
         </div>
       </div>
 
@@ -471,7 +516,7 @@
 
     <section id="wardrobePage" class="page">
       <div class="section-header-row">
-        <h1 id="wardrobeHeader">WARDROBE</h1>
+        <h1 id="wardrobeHeader" data-i18n="wardrobe_title">WARDROBE</h1>
         <button class="settings-icon" id="openSettingsBtn" title="Beállítások">⚙️</button>
       </div>
 
@@ -486,12 +531,12 @@
       </div>
 
       <div class="section-block">
-        <h3>Ruhák</h3>
+        <h3 data-i18n="clothes">Ruhák</h3>
         <div id="itemsByCategory" class="category-stack"></div>
       </div>
 
       <div class="section-block">
-        <h3>Elmentett outfitek</h3>
+        <h3 data-i18n="saved_outfits">Elmentett outfitek</h3>
         <div id="savedOutfits" class="category-stack"></div>
       </div>
     </section>
@@ -504,7 +549,7 @@
     <button class="nav-btn" data-page="wardrobePage">Wardrobe</button>
   </nav>
 
-  <dialog id="uploadDialog">
+  <dialog id="uploadDialog" class="hidden">
     <h3>Új feltöltés</h3>
     <div class="row">
       <select id="uploadKind">
@@ -544,11 +589,12 @@
       <button class="btn ghost" id="closeUploadBtn">Mégse</button>
     </div>
   </dialog>
+  <input id="wardrobeItemInput" class="hidden" type="file" accept="image/*" />
 
   <input id="avatarInput" class="hidden" type="file" accept="image/*" />
   <input id="coverInput" class="hidden" type="file" accept="image/*" />
   <dialog id="settingsDialog">
-    <h3>Profil beállítások</h3>
+    <h3 data-i18n="settings_title">Profil beállítások</h3>
     <div class="name-grid">
       <input id="lastNameInput" placeholder="Vezetéknév" />
       <input id="firstNameInput" placeholder="Keresztnév" />
@@ -567,12 +613,26 @@
       </select>
     </div>
     <div class="row" style="margin-top:10px;">
-      <button class="btn" id="saveProfileBtn">Profil mentés</button>
-      <button class="btn ghost" id="toggleDarkBtn">Dark mód</button>
-      <span class="muted" id="profileGenderLabel">nem beállítva</span>
+      <button class="btn" id="saveProfileBtn" data-i18n="save_profile">Profil mentés</button>
+      <button class="btn ghost" id="toggleDarkBtn" data-i18n="dark_mode">Dark mód</button>
+      <span class="muted" id="profileGenderLabel" data-i18n="not_set">nem beállítva</span>
     </div>
     <div class="row" style="margin-top:10px;">
-      <button class="btn ghost" id="closeSettingsBtn">Bezárás</button>
+      <button class="btn ghost" id="closeSettingsBtn" data-i18n="close">Bezárás</button>
+    </div>
+  </dialog>
+  <dialog id="weatherDialog">
+    <div class="weather-app-head">
+      <h3 data-i18n="weather_app">Időjárás</h3>
+      <button class="btn ghost" id="closeWeatherBtn" data-i18n="close">Bezárás</button>
+    </div>
+    <div class="weather-hero">
+      <h2 id="weatherAppNow">--</h2>
+      <p id="weatherAppCity">--</p>
+    </div>
+    <div class="section-block">
+      <h4 data-i18n="wear_reco">Mit érdemes felvenni?</h4>
+      <p id="weatherClothingAdvice">--</p>
     </div>
   </dialog>
 
@@ -583,6 +643,8 @@
     let currentPage = "stylingPage";
     let currentMode = 3;
     let currentOutfit = null;
+    let pendingUploadType = "felso";
+    let latestWeather = null;
 
     const pages = document.querySelectorAll(".page");
     const navButtons = document.querySelectorAll(".nav-btn");
@@ -679,14 +741,17 @@
         applyTheme();
       });
 
-      document.getElementById("closeUploadBtn").addEventListener("click", () => {
-        document.getElementById("uploadDialog").close();
+      const wardrobeItemInput = document.getElementById("wardrobeItemInput");
+      wardrobeItemInput.addEventListener("change", async e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        await processClothing(file, pendingUploadType);
+        wardrobeItemInput.value = "";
       });
 
-      document.getElementById("uploadKind").addEventListener("change", toggleUploadExtra);
-      document.getElementById("saveUploadBtn").addEventListener("click", handleUploadFromDialog);
-
       document.getElementById("saveProfileBtn").addEventListener("click", saveProfile);
+      document.getElementById("weatherBtn").addEventListener("click", openWeatherDialog);
+      document.getElementById("closeWeatherBtn").addEventListener("click", () => document.getElementById("weatherDialog").close());
       document.getElementById("avatarPlusBtn").addEventListener("click", () => document.getElementById("avatarInput").click());
       document.getElementById("coverPlusBtn").addEventListener("click", () => document.getElementById("coverInput").click());
 
@@ -722,7 +787,6 @@
       applyTheme();
       applyLanguage();
       renderModeCycle();
-      toggleUploadExtra();
     }
 
     function getDisplayName() {
@@ -782,14 +846,14 @@
 
     function categoryConfig() {
       const base = [
-        { label: "Póló", types: ["felso"] },
-        { label: "Nadrág", types: ["also", "szoknya"] },
-        { label: "Pulcsi", types: ["pulcsi"] },
-        { label: "Kabát", types: ["kabat"] },
-        { label: "Cipő", types: ["cipo"] }
+        { labelKey: "cat_top", types: ["felso"] },
+        { labelKey: "cat_bottom", types: ["also", "szoknya"] },
+        { labelKey: "cat_hoodie", types: ["pulcsi"] },
+        { labelKey: "cat_coat", types: ["kabat"] },
+        { labelKey: "cat_shoes", types: ["cipo"] }
       ];
       if (state.profile.gender === "female") {
-        base.splice(4, 0, { label: "Ruha", types: ["dress"] });
+        base.splice(4, 0, { labelKey: "cat_dress", types: ["dress"] });
       }
       return base;
     }
@@ -799,30 +863,31 @@
       const groups = categoryConfig();
 
       itemsByCategory.innerHTML = groups.map(group => {
+        const t = getLabels();
         const items = allowed.filter(item => group.types.includes(item.type));
         const cards = items.length
           ? items.map(item => `
                 <article class="item-card">
                   <img src="${item.image}" alt="${item.type}" />
                   <div class="meta">
-                    <strong>${item.type}</strong><br />
-                    stílus: ${item.style} · szín: ${item.color}
+                    <strong>${translateType(item.type)}</strong><br />
+                    ${t.style_label}: ${translateStyle(item.style)} · ${t.color_label}: ${translateColor(item.color)}
                     <div class="row" style="margin-top:6px;">
-                      <button class="btn ghost" onclick="toggleItemLike('${item.id}')">${item.liked ? "💔 unlike" : "❤️ like"}</button>
-                      <button class="btn ghost" onclick="toggleItemHidden('${item.id}')">${item.hidden ? "🙈 unhide" : "🙈 hide"}</button>
+                      <button class="btn ghost" onclick="toggleItemLike('${item.id}')">${item.liked ? t.unlike : t.like}</button>
+                      <button class="btn ghost" onclick="toggleItemHidden('${item.id}')">${item.hidden ? t.unhide : t.hide}</button>
                     </div>
                   </div>
                 </article>
               `).join("")
-          : `<p class="muted">Nincs feltöltött elem.</p>`;
+          : `<p class="muted">${t.no_uploaded_items}</p>`;
         return `
           <section class="category-group">
-            <h4>${group.label}</h4>
+            <h4>${t[group.labelKey]}</h4>
             <div class="item-row">
               ${cards}
             </div>
             <div class="category-add-row">
-              <button class="btn" onclick="openUploadForType('${group.types[0]}')">+ Hozzáadás</button>
+              <button class="btn" onclick="openUploadForType('${group.types[0]}')">+ ${t.add}</button>
             </div>
           </section>
         `;
@@ -831,21 +896,22 @@
 
     function renderOutfits() {
       if (!state.outfits.length) {
-        savedOutfits.innerHTML = `<p class="muted">Még nincs elmentett outfit.</p>`;
+        savedOutfits.innerHTML = `<p class="muted">${getLabels().no_saved_outfit}</p>`;
         return;
       }
 
       savedOutfits.innerHTML = state.outfits.map(outfit => {
+        const t = getLabels();
         const pieces = outfit.pieces.map(id => state.items.find(x => x.id === id)).filter(Boolean);
         return `
           <article class="category-group">
-            <h4>${outfit.mode} részes · ${new Date(outfit.createdAt).toLocaleDateString("hu-HU")}</h4>
+            <h4>${outfit.mode} ${t.pieces} · ${new Date(outfit.createdAt).toLocaleDateString("hu-HU")}</h4>
             <div class="item-row">
               ${pieces.map(piece => `<img class="mini-piece" style="height:90px; width:90px;" src="${piece.image}" alt="${piece.type}" />`).join("")}
             </div>
             <div class="row" style="margin-top:6px;">
-              <button class="btn ghost" onclick="toggleOutfitLike('${outfit.id}')">${outfit.liked ? "💔 unlike" : "❤️ like"}</button>
-              <button class="btn ghost" onclick="toggleOutfitHidden('${outfit.id}')">${outfit.hidden ? "🙈 unhide" : "🙈 hide"}</button>
+              <button class="btn ghost" onclick="toggleOutfitLike('${outfit.id}')">${outfit.liked ? t.unlike : t.like}</button>
+              <button class="btn ghost" onclick="toggleOutfitHidden('${outfit.id}')">${outfit.hidden ? t.unhide : t.hide}</button>
             </div>
           </article>
         `;
@@ -925,35 +991,12 @@
       holder.innerHTML = html;
     }
 
-    async function handleUploadFromDialog() {
-      const kind = document.getElementById("uploadKind").value;
-
-      const file = document.getElementById("uploadFile").files[0];
-      if (!file) return alert("Válassz képet.");
-
-      if (kind === "selfie") {
-        state.profile.avatar = await fileToDataUrl(file);
-        saveState();
-        renderProfile();
-        document.getElementById("uploadDialog").close();
-        return;
-      }
-
-      await processClothing(file);
-      document.getElementById("uploadDialog").close();
-    }
-
-    function toggleUploadExtra() {
-      const kind = document.getElementById("uploadKind").value;
-      document.getElementById("itemExtra").classList.toggle("hidden", kind !== "item");
-    }
-
-    async function processClothing(file) {
+    async function processClothing(file, forcedType = null) {
       let imageUrl = await removeBackgroundSmart(file);
       const removeBgOk = Boolean(imageUrl);
       if (!imageUrl) imageUrl = await fileToDataUrl(file);
 
-      let aiType = document.getElementById("manualType").value;
+      let aiType = forcedType || "felso";
       let aiStyle = document.getElementById("manualStyle").value;
       let aiOk = true;
 
@@ -968,7 +1011,7 @@
       }
 
       const color = await detectColorFromImage(imageUrl);
-      const targetGender = document.getElementById("targetGender").value;
+      const targetGender = state.profile.gender || "unisex";
 
       state.items.push({
         id: uid(),
@@ -1006,7 +1049,7 @@
 
           if (res.ok) {
             const blob = await res.blob();
-            return URL.createObjectURL(blob);
+            return blobToDataUrl(blob);
           }
         } catch (e) {}
       }
@@ -1210,6 +1253,15 @@
       });
     }
 
+    async function blobToDataUrl(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
+
     function startClock() {
       const clock = document.getElementById("clock");
       const tick = () => {
@@ -1238,14 +1290,16 @@
 
         const temp = Math.round(data.current.temperature_2m);
         const code = data.current.weather_code;
-        weatherEl.textContent = `🌦️ ${name}: ${temp}°C · ${weatherCodeToText(code)}`;
+        latestWeather = { city: name, temp, code };
+        weatherEl.textContent = `${name}: ${temp}°C · ${weatherCodeToText(code)}`;
       } catch (e) {
-        weatherEl.textContent = "🌦️ Időjárás nem elérhető";
+        latestWeather = null;
+        weatherEl.textContent = getLabels().weather_unavailable;
       }
     }
 
     function renderModeCycle() {
-      modeCycleBtn.textContent = `${currentMode} RÉSZES`;
+      modeCycleBtn.textContent = `${currentMode} ${getLabels().pieces}`;
     }
 
     function applyTheme() {
@@ -1254,23 +1308,23 @@
 
     function applyLanguage() {
       const lang = state.profile.language || "hu";
-      const labels = {
-        hu: { community: "Community", planner: "Planner", styling: "Styling", wardrobe: "WARDROBE", settings: "Profil beállítások" },
-        en: { community: "Community", planner: "Planner", styling: "Styling", wardrobe: "WARDROBE", settings: "Profile settings" },
-        de: { community: "Community", planner: "Planer", styling: "Styling", wardrobe: "KLEIDERSCHRANK", settings: "Profileinstellungen" },
-        uk: { community: "Спільнота", planner: "Планер", styling: "Стиль", wardrobe: "ГАРДЕРОБ", settings: "Налаштування профілю" },
-        zh: { community: "社区", planner: "计划", styling: "穿搭", wardrobe: "衣橱", settings: "个人设置" }
-      }[lang];
+      const labels = getLabels(lang);
       const btns = document.querySelectorAll(".nav-btn");
       btns[0].textContent = labels.community;
       btns[1].textContent = labels.planner;
       btns[2].textContent = labels.styling;
       btns[3].textContent = labels.wardrobe;
-      document.querySelector("#communityPage h1").textContent = labels.community;
-      document.querySelector("#plannerPage h1").textContent = labels.planner;
-      document.querySelector("#stylingPage h1").textContent = labels.styling;
-      document.getElementById("wardrobeHeader").textContent = labels.wardrobe;
-      document.querySelector("#settingsDialog h3").textContent = labels.settings;
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.dataset.i18n;
+        if (labels[key]) el.textContent = labels[key];
+      });
+      document.getElementById("openSettingsBtn").title = labels.settings_title;
+      document.getElementById("coverPlusBtn").title = labels.cover_change;
+      document.getElementById("avatarPlusBtn").title = labels.avatar_change;
+      renderModeCycle();
+      renderItems();
+      renderOutfits();
+      if (!latestWeather) document.getElementById("weather").textContent = labels.weather_loading;
     }
 
     async function loadImage(src) {
@@ -1290,20 +1344,114 @@
     }
 
     function openUploadForType(type) {
-      document.getElementById("uploadKind").value = "item";
-      document.getElementById("manualType").value = type;
-      toggleUploadExtra();
-      document.getElementById("uploadDialog").showModal();
+      pendingUploadType = type;
+      document.getElementById("wardrobeItemInput").click();
+    }
+
+    function getLabels(forceLang) {
+      const lang = forceLang || state.profile.language || "hu";
+      const dict = {
+        hu: {
+          community: "Community", planner: "Planner", styling: "Styling", wardrobe: "WARDROBE",
+          community_title: "Community", planner_title: "Planner", styling_title: "Styling", wardrobe_title: "WARDROBE",
+          settings_title: "Profil beállítások", community_soon: "Ez a rész később készül el.", community_full: "A nézet most teljes szélességű.",
+          styling_desc: "A generált ruhák egymás alatt, nagy képekkel jelennek meg.", generate: "🎯 Outfit generálás", outfit_like: "❤️ Outfit like",
+          save_planner: "Mentés a Plannerbe", clothes: "Ruhák", saved_outfits: "Elmentett outfitek", save_profile: "Profil mentés", dark_mode: "Dark mód",
+          close: "Bezárás", weather_app: "Időjárás app", wear_reco: "Mit érdemes felvenni?", not_set: "nem beállítva", add: "Hozzáadás",
+          no_uploaded_items: "Nincs feltöltött elem.", no_saved_outfit: "Még nincs elmentett outfit.", pieces: "részes",
+          like: "❤️ like", unlike: "💔 unlike", hide: "🙈 hide", unhide: "🙈 unhide", style_label: "stílus", color_label: "szín",
+          weather_unavailable: "Időjárás nem elérhető", weather_loading: "Időjárás betöltése...", weather_try_later: "Kérlek próbáld újra pár másodperc múlva.",
+          advice_storm: "Viharos idő: vízálló kabát és zárt cipő javasolt.", advice_rain: "Esős idő: esőkabát + vízálló cipő ajánlott.",
+          advice_cold: "Nagyon hideg: réteges öltözködés, vastag kabát, sál és csizma.",
+          advice_cool: "Hűvös idő: pulcsi és könnyű kabát jó választás.",
+          advice_mild: "Kellemes idő: póló + nadrág/szoknya + kényelmes cipő.",
+          advice_hot: "Meleg idő: könnyű, szellős ruházat és világos színek ajánlott.",
+          cover_change: "Background csere", avatar_change: "Profilkép csere",
+          cat_top: "Pólók", cat_bottom: "Nadrágok", cat_hoodie: "Pulcsik", cat_coat: "Kabátok", cat_shoes: "Cipők", cat_dress: "Ruhák"
+        },
+        en: {
+          community: "Community", planner: "Planner", styling: "Styling", wardrobe: "WARDROBE",
+          community_title: "Community", planner_title: "Planner", styling_title: "Styling", wardrobe_title: "WARDROBE",
+          settings_title: "Profile settings", community_soon: "This section is coming soon.", community_full: "This view is full width.",
+          styling_desc: "Generated outfits appear below as large images.", generate: "🎯 Generate outfit", outfit_like: "❤️ Outfit like",
+          save_planner: "Save to Planner", clothes: "Clothes", saved_outfits: "Saved outfits", save_profile: "Save profile", dark_mode: "Dark mode",
+          close: "Close", weather_app: "Weather app", wear_reco: "What to wear?", not_set: "not set", add: "Add",
+          no_uploaded_items: "No uploaded items yet.", no_saved_outfit: "No saved outfits yet.", pieces: "pieces",
+          like: "❤️ like", unlike: "💔 unlike", hide: "🙈 hide", unhide: "🙈 unhide", style_label: "style", color_label: "color",
+          weather_unavailable: "Weather unavailable", weather_loading: "Loading weather...", weather_try_later: "Please try again in a few seconds.",
+          advice_storm: "Storm expected: wear a waterproof jacket and closed shoes.", advice_rain: "Rainy weather: raincoat and waterproof shoes recommended.",
+          advice_cold: "Very cold: wear layers, heavy coat, scarf and boots.",
+          advice_cool: "Cool weather: a hoodie and light jacket are ideal.",
+          advice_mild: "Mild weather: t-shirt + pants/skirt + comfy shoes.",
+          advice_hot: "Hot weather: light breathable fabrics and bright colors.",
+          cover_change: "Change background", avatar_change: "Change profile photo",
+          cat_top: "Tops", cat_bottom: "Bottoms", cat_hoodie: "Hoodies", cat_coat: "Coats", cat_shoes: "Shoes", cat_dress: "Dresses"
+        }
+      };
+      if (lang === "de") return { ...dict.en, community: "Community", planner: "Planer", wardrobe: "KLEIDERSCHRANK", wardrobe_title: "KLEIDERSCHRANK", settings_title: "Profileinstellungen", close: "Schließen", add: "Hinzufügen" };
+      if (lang === "uk") return { ...dict.en, community: "Спільнота", planner: "Планер", styling: "Стиль", wardrobe: "ГАРДЕРОБ", wardrobe_title: "ГАРДЕРОБ", settings_title: "Налаштування профілю", close: "Закрити", add: "Додати" };
+      if (lang === "zh") return { ...dict.en, community: "社区", planner: "计划", styling: "穿搭", wardrobe: "衣橱", wardrobe_title: "衣橱", settings_title: "个人设置", close: "关闭", add: "添加" };
+      return dict[lang] || dict.hu;
+    }
+
+    function translateType(type) {
+      const map = {
+        felso: { hu: "felső", en: "top" }, also: { hu: "alsó", en: "bottom" }, szoknya: { hu: "szoknya", en: "skirt" },
+        pulcsi: { hu: "pulcsi", en: "hoodie" }, kabat: { hu: "kabát", en: "coat" }, dress: { hu: "ruha", en: "dress" }, cipo: { hu: "cipő", en: "shoes" }
+      };
+      const lang = state.profile.language || "hu";
+      return map[type]?.[lang] || map[type]?.hu || type;
+    }
+
+    function translateStyle(style) {
+      const map = { casual: { hu: "casual", en: "casual" }, elegant: { hu: "elegáns", en: "elegant" }, sport: { hu: "sportos", en: "sport" } };
+      const lang = state.profile.language || "hu";
+      return map[style]?.[lang] || style;
+    }
+
+    function translateColor(color) {
+      const map = { black: { hu: "fekete", en: "black" }, white: { hu: "fehér", en: "white" }, red: { hu: "piros", en: "red" }, blue: { hu: "kék", en: "blue" }, green: { hu: "zöld", en: "green" }, neutral: { hu: "semleges", en: "neutral" } };
+      const lang = state.profile.language || "hu";
+      return map[color]?.[lang] || color;
+    }
+
+    function openWeatherDialog() {
+      const t = getLabels();
+      const dialog = document.getElementById("weatherDialog");
+      if (!latestWeather) {
+        document.getElementById("weatherAppNow").textContent = t.weather_unavailable;
+        document.getElementById("weatherAppCity").textContent = "";
+        document.getElementById("weatherClothingAdvice").textContent = t.weather_try_later;
+        dialog.showModal();
+        return;
+      }
+      document.getElementById("weatherAppNow").textContent = `${latestWeather.temp}°C · ${weatherCodeToText(latestWeather.code)}`;
+      document.getElementById("weatherAppCity").textContent = latestWeather.city;
+      document.getElementById("weatherClothingAdvice").textContent = getClothingAdvice(latestWeather.temp, latestWeather.code);
+      dialog.showModal();
+    }
+
+    function getClothingAdvice(temp, code) {
+      const t = getLabels();
+      if (code >= 95) return t.advice_storm;
+      if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return t.advice_rain;
+      if (temp <= 3) return t.advice_cold;
+      if (temp <= 12) return t.advice_cool;
+      if (temp <= 22) return t.advice_mild;
+      return t.advice_hot;
     }
 
     function weatherCodeToText(code) {
-      if ([0].includes(code)) return "derült";
-      if ([1, 2, 3].includes(code)) return "felhős";
-      if ([45, 48].includes(code)) return "köd";
-      if ([51, 53, 55, 56, 57, 61, 63, 65, 80, 81, 82].includes(code)) return "eső";
-      if ([71, 73, 75, 77, 85, 86].includes(code)) return "hó";
-      if ([95, 96, 99].includes(code)) return "vihar";
-      return "vegyes";
+      const hu = [ "derült", "felhős", "köd", "eső", "hó", "vihar", "vegyes" ];
+      const en = [ "clear", "cloudy", "fog", "rain", "snow", "storm", "mixed" ];
+      const words = (state.profile.language || "hu") === "en" ? en : hu;
+      if ([0].includes(code)) return words[0];
+      if ([1, 2, 3].includes(code)) return words[1];
+      if ([45, 48].includes(code)) return words[2];
+      if ([51, 53, 55, 56, 57, 61, 63, 65, 80, 81, 82].includes(code)) return words[3];
+      if ([71, 73, 75, 77, 85, 86].includes(code)) return words[4];
+      if ([95, 96, 99].includes(code)) return words[5];
+      return words[6];
     }
 
     function toggleItemLike(id) {
