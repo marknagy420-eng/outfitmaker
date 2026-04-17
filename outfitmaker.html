@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<title>AI Outfit Engine</title>
+
+<style>
+body {
+  background:#111;
+  color:white;
+  font-family:Arial;
+  text-align:center;
+  padding:20px;
+}
+
+.box {
+  border:1px solid white;
+  padding:15px;
+  margin-top:20px;
+  width:350px;
+  margin:auto;
+}
+
+img {
+  max-width:120px;
+  margin-top:10px;
+}
+button {
+  padding:10px;
+  margin:5px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>👕 AI Outfit Engine</h1>
+
+<h3 id="weather">🌦️ időjárás...</h3>
+
+<input type="file" id="file">
+
+<br>
+
+<button onclick="processClothing()">🧼 Feltöltés + AI feldolgozás</button>
+
+<button onclick="generateOutfit()">🎯 Outfit generálás</button>
+
+<select id="vibe">
+  <option value="casual">casual</option>
+  <option value="elegant">elegant</option>
+  <option value="sport">sport</option>
+</select>
+
+<div class="box" id="out"></div>
+
+<script>
+
+/* =========================
+   📦 GARDROBE
+========================= */
+
+let wardrobe = [];
+
+/* =========================
+   🌦️ FAKE WEATHER (egyszerű)
+========================= */
+
+let weather = {
+  temp: 18,
+  condition: "Clear"
+};
+
+/* =========================
+   🎨 SZÍN FELISMERÉS (JS)
+========================= */
+
+function getAverageColor(img) {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = 50;
+  canvas.height = 50;
+
+  ctx.drawImage(img, 0, 0, 50, 50);
+
+  const data = ctx.getImageData(0,0,50,50).data;
+
+  let r=0,g=0,b=0,count=0;
+
+  for (let i=0;i<data.length;i+=4){
+    r += data[i];
+    g += data[i+1];
+    b += data[i+2];
+    count++;
+  }
+
+  r=Math.floor(r/count);
+  g=Math.floor(g/count);
+  b=Math.floor(b/count);
+
+  return {r,g,b};
+}
+
+/* =========================
+   🧠 SZÍN NÉV
+========================= */
+
+function colorName({r,g,b}) {
+  if (r<80 && g<80 && b<80) return "black";
+  if (r>200 && g>200 && b>200) return "white";
+  if (b>150) return "blue";
+  if (r>150) return "red";
+  return "unknown";
+}
+
+/* =========================
+   🧼 REMOVE.BG API
+   :contentReference[oaicite:0]{index=0}
+========================= */
+
+async function removeBackground(file) {
+
+  const form = new FormData();
+  form.append("image_file", file);
+
+  const res = await fetch("https://api.remove.bg/v1.0/removebg", {
+    method:"POST",
+    headers:{
+      "X-Api-Key":"YOUR_REMOVE_BG_KEY"
+    },
+    body:form
+  });
+
+  const blob = await res.blob();
+  return URL.createObjectURL(blob);
+}
+
+/* =========================
+   🤖 OPENAI VISION
+   :contentReference[oaicite:1]{index=1}
+========================= */
+
+async function detectClothingType(base64Image) {
+
+  const res = await fetch("https://api.openai.com/v1/responses", {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":"Bearer YOUR_OPENAI_KEY"
+    },
+    body:JSON.stringify({
+      model:"gpt-4o-mini",
+      input:[
+        {
+          role:"user",
+          content:[
+            {type:"input_text", text:"Mondd meg: póló / nadrág / cipő és stílus (casual/elegant/sport)."},
+            {type:"input_image", image_url: base64Image}
+          ]
+        }
+      ]
+    })
+  });
+
+  const data = await res.json();
+
+  return data.output_text || "felso,casual";
+}
+
+/* =========================
+   📸 BASE64 CONVERT
+========================= */
+
+function toBase64(file){
+  return new Promise(resolve=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(reader.result);
+    reader.readAsDataURL(file);
+  });
+}
+
+/* =========================
+   👕 FŐ PIPELINE
+========================= */
+
+async function processClothing(){
+
+  const file = document.getElementById("file").files[0];
+  if(!file) return alert("Tölts fel képet!");
+
+  document.getElementById("out").innerHTML="🤖 AI feldolgozás...";
+
+  // 1. háttér eltávolítás
+  let cutoutUrl;
+  try {
+    cutoutUrl = await removeBackground(file);
+  } catch(e){
+    cutoutUrl = URL.createObjectURL(file);
+  }
+
+  // 2. AI felismerés
+  const base64 = await toBase64(file);
+
+  let aiResult;
+  try {
+    aiResult = await detectClothingType(base64);
+  } catch(e){
+    aiResult = "felso,casual";
+  }
+
+  let [type, style] = aiResult.split(",");
+
+  // 3. szín felismerés
+  const img = new Image();
+  img.src = cutoutUrl;
+
+  img.onload = ()=>{
+
+    const color = colorName(getAverageColor(img));
+
+    // 4. mentés
+    wardrobe.push({
+      type,
+      style,
+      color,
+      image: cutoutUrl
+    });
+
+    document.getElementById("out").innerHTML=`
+      <h3>✔ hozzáadva</h3>
+      <img src="${cutoutUrl}">
+      <p>${type} | ${style} | ${color}</p>
+    `;
+  };
+}
+
+/* =========================
+   🎯 OUTFIT GENERÁLÁS
+========================= */
+
+function generateOutfit(){
+
+  const vibe = document.getElementById("vibe").value;
+
+  const felso = wardrobe.filter(x=>x.type==="felso");
+  const also = wardrobe.filter(x=>x.type==="also");
+  const cipo = wardrobe.filter(x=>x.type==="cipo");
+
+  if(!felso.length || !also.length || !cipo.length){
+    return alert("Nincs elég ruha!");
+  }
+
+  const outfit = {
+    felso: felso[Math.floor(Math.random()*felso.length)],
+    also: also[Math.floor(Math.random()*also.length)],
+    cipo: cipo[Math.floor(Math.random()*cipo.length)]
+  };
+
+  document.getElementById("out").innerHTML=`
+    <h2>👕 Outfit</h2>
+    <img src="${outfit.felso.image}">
+    <img src="${outfit.also.image}">
+    <img src="${outfit.cipo.image}">
+    <p>${outfit.felso.type} | ${outfit.also.type} | ${outfit.cipo.type}</p>
+    <p>🎯 vibe: ${vibe}</p>
+  `;
+}
+
+</script>
+
+</body>
+</html>
