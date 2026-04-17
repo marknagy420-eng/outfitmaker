@@ -11,6 +11,11 @@
       --muted: #666;
       --line: #d9d9d9;
       --panel: #ffffff;
+      --surface: #ffffff;
+      --surface-alt: #f4f5f8;
+      --btn-bg: #000000;
+      --btn-fg: #ffffff;
+      --btn-border: #000000;
     }
     body.dark {
       --bg: #111418;
@@ -18,6 +23,11 @@
       --muted: #b7bfcc;
       --line: #2a3240;
       --panel: #1a212c;
+      --surface: #1f2733;
+      --surface-alt: #161d28;
+      --btn-bg: #eaeef5;
+      --btn-fg: #111418;
+      --btn-border: #eaeef5;
     }
 
     * { box-sizing: border-box; }
@@ -45,7 +55,7 @@
       position: sticky;
       top: 0;
       z-index: 30;
-      background: #fff;
+      background: var(--surface);
       border-bottom: 1px solid var(--line);
       padding: 12px 16px;
       display: flex;
@@ -68,9 +78,9 @@
 
     .btn,
     .icon-btn {
-      border: 1px solid #000;
-      background: #000;
-      color: #fff;
+      border: 1px solid var(--btn-border);
+      background: var(--btn-bg);
+      color: var(--btn-fg);
       padding: 10px 12px;
       border-radius: 10px;
       cursor: pointer;
@@ -78,8 +88,9 @@
     }
 
     .btn.ghost {
-      background: #fff;
-      color: #000;
+      background: transparent;
+      color: var(--fg);
+      border-color: var(--line);
     }
 
     .btn:disabled { opacity: 0.45; cursor: not-allowed; }
@@ -111,20 +122,21 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       border-top: 1px solid var(--line);
-      background: #fff;
+      background: var(--surface);
     }
 
     .nav-btn {
       border: 0;
       border-right: 1px solid var(--line);
-      background: #fff;
+      background: var(--surface);
+      color: var(--fg);
       padding: 12px 8px;
       font-weight: 700;
       cursor: pointer;
     }
 
     .nav-btn:last-child { border-right: 0; }
-    .nav-btn.active { background: #000; color: #fff; }
+    .nav-btn.active { background: var(--btn-bg); color: var(--btn-fg); }
 
     .mode-cycle-wrap {
       position: sticky;
@@ -156,7 +168,7 @@
       border: 1px solid var(--line);
       display: inline-block;
       margin-bottom: 10px;
-      background: #fff;
+      background: var(--surface-alt);
     }
 
     .styling-list {
@@ -166,7 +178,7 @@
     }
 
     .style-piece {
-      background: #fff;
+      background: var(--surface);
       border: 1px solid var(--line);
       border-radius: 12px;
       overflow: hidden;
@@ -178,7 +190,7 @@
       height: min(55vh, 460px);
       object-fit: cover;
       display: block;
-      background: #efefef;
+      background: var(--surface-alt);
     }
 
     .style-piece .meta {
@@ -189,7 +201,7 @@
 
     .profile-shell {
       width: 100%;
-      background: #fff;
+      background: var(--surface);
       border: 1px solid var(--line);
       border-radius: 12px;
       overflow: hidden;
@@ -209,8 +221,8 @@
       width: 120px;
       height: 120px;
       border-radius: 50%;
-      border: 4px solid #fff;
-      background: #ddd center/cover no-repeat;
+      border: 4px solid var(--surface);
+      background: var(--surface-alt) center/cover no-repeat;
       margin-right: 12px;
       position: relative;
     }
@@ -223,8 +235,8 @@
       border-radius: 50%;
       width: 34px;
       height: 34px;
-      background: #000;
-      color: #fff;
+      background: var(--btn-bg);
+      color: var(--btn-fg);
       font-size: 22px;
       line-height: 1;
       cursor: pointer;
@@ -263,7 +275,8 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 10px;
-      background: #fff;
+      background: var(--surface);
+      color: var(--fg);
     }
 
     .section-header-row {
@@ -275,9 +288,9 @@
       margin-bottom: 8px;
     }
     .settings-icon {
-      border: 1px solid #000;
-      background: #fff;
-      color: #000;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--fg);
       border-radius: 10px;
       min-width: 46px;
       height: 42px;
@@ -294,7 +307,7 @@
     .category-group {
       border: 1px solid var(--line);
       border-radius: 12px;
-      background: #fff;
+      background: var(--surface);
       padding: 10px;
     }
     .category-add-row {
@@ -315,7 +328,7 @@
       max-width: 210px;
       border: 1px solid var(--line);
       border-radius: 10px;
-      background: #fff;
+      background: var(--surface);
       overflow: hidden;
     }
 
@@ -324,7 +337,7 @@
       height: 190px;
       object-fit: cover;
       display: block;
-      background: #efefef;
+      background: var(--surface-alt);
     }
 
     .item-card .meta {
@@ -347,7 +360,7 @@
 
     .planner-layout {
       width: 100%;
-      background: #fff;
+      background: var(--surface);
       border: 1px solid var(--line);
       border-radius: 12px;
       padding: 14px;
@@ -371,7 +384,7 @@
       font-weight: 700;
       text-align: center;
       font-size: 13px;
-      color: #222;
+      color: var(--fg);
       padding-bottom: 4px;
     }
 
@@ -380,10 +393,10 @@
       border-radius: 10px;
       min-height: 140px;
       padding: 6px;
-      background: #fff;
+      background: var(--surface);
     }
 
-    .day-cell.today { border-color: #000; }
+    .day-cell.today { border-color: var(--btn-border); }
 
     .day-number {
       font-size: 13px;
@@ -402,7 +415,7 @@
     }
 
     .empty-day {
-      background: #f5f5f5;
+      background: var(--surface-alt);
       border: 1px dashed #e3e3e3;
     }
 
@@ -414,6 +427,8 @@
       width: min(560px, 92vw);
       max-height: 90vh;
       padding: 16px;
+      background: var(--surface);
+      color: var(--fg);
     }
     #settingsDialog {
       width: 100vw;
@@ -758,17 +773,13 @@
       document.getElementById("avatarInput").addEventListener("change", async e => {
         const file = e.target.files[0];
         if (!file) return;
-        state.profile.avatar = await fileToDataUrl(file);
-        saveState();
-        renderProfile();
+        await processProfileImageUpload(file, "avatar");
       });
 
       document.getElementById("coverInput").addEventListener("change", async e => {
         const file = e.target.files[0];
         if (!file) return;
-        state.profile.cover = await fileToDataUrl(file);
-        saveState();
-        renderProfile();
+        await processProfileImageUpload(file, "cover");
       });
     }
 
@@ -801,6 +812,7 @@
     }
 
     function renderProfile() {
+      const labels = getLabels();
       document.getElementById("lastNameInput").value = state.profile.lastName || "";
       document.getElementById("firstNameInput").value = state.profile.firstName || "";
       document.getElementById("nicknameInput").value = state.profile.nickname || "";
@@ -809,8 +821,8 @@
       document.getElementById("languageInput").value = state.profile.language || "hu";
 
       document.getElementById("profileNameLabel").textContent = "";
-      document.getElementById("profileGenderLabel").textContent = state.profile.gender === "male" ? "férfi" : "nő";
-      document.getElementById("wardrobeHeader").textContent = "WARDROBE";
+      document.getElementById("profileGenderLabel").textContent = (state.profile.gender === "male" ? labels.gender_male : labels.gender_female).toLowerCase();
+      document.getElementById("wardrobeHeader").textContent = labels.wardrobe_title;
 
       const avatarBox = document.getElementById("avatarBox");
       avatarBox.style.backgroundImage = state.profile.avatar ? `url(${state.profile.avatar})` : "none";
@@ -991,33 +1003,54 @@
       holder.innerHTML = html;
     }
 
-    async function processClothing(file, forcedType = null) {
-      let imageUrl = await removeBackgroundSmart(file);
-      const removeBgOk = Boolean(imageUrl);
-      if (!imageUrl) imageUrl = await fileToDataUrl(file);
+    async function processProfileImageUpload(file, targetField) {
+      try {
+        const imageUrl = await fileToDataUrl(file);
+        state.profile[targetField] = imageUrl;
+        saveState();
+        renderProfile();
+      } catch (e) {
+        alert(getLabels().upload_failed);
+      }
+    }
 
-      let aiType = forcedType || "felso";
-      let aiStyle = document.getElementById("manualStyle").value;
-      let aiOk = true;
+    async function processClothing(file, forcedType = null) {
+      const fallbackImage = await fileToDataUrl(file);
+      let imageUrl = fallbackImage;
+      let removeBgOk = false;
 
       try {
-        const base64 = await fileToDataUrl(file);
-        const aiText = await detectClothingType(base64);
+        const processedImage = await removeBackgroundSmart(file);
+        if (processedImage) {
+          imageUrl = processedImage;
+          removeBgOk = true;
+        }
+      } catch (e) {}
+
+      let aiType = forcedType || "felso";
+      let aiStyle = "casual";
+      let aiOk = false;
+
+      try {
+        const aiText = await detectClothingType(fallbackImage);
         const parsed = parseVisionResult(aiText);
         aiType = parsed.type;
         aiStyle = parsed.style;
-      } catch (e) {
-        aiOk = false;
-      }
+        aiOk = true;
+      } catch (e) {}
 
-      const color = await detectColorFromImage(imageUrl);
+      let color = "neutral";
+      try {
+        color = await detectColorFromImage(imageUrl);
+      } catch (e) {}
+
       const targetGender = state.profile.gender || "unisex";
 
       state.items.push({
         id: uid(),
         image: imageUrl,
-        type: normalizeType(aiType),
-        style: aiStyle,
+        type: normalizeType(aiType || forcedType || "felso"),
+        style: ["casual", "elegant", "sport"].includes(aiStyle) ? aiStyle : "casual",
         color,
         targetGender,
         liked: false,
@@ -1029,8 +1062,8 @@
       renderAll();
 
       aiStatus.textContent = aiOk && removeBgOk
-        ? "✅ AI + Remove.bg sikeres."
-        : "⚠️ Fallback mód: kézi adat / eredeti kép használva.";
+        ? getLabels().ai_removebg_ok
+        : getLabels().upload_fallback_info;
     }
 
     async function removeBackgroundSmart(file) {
@@ -1041,11 +1074,15 @@
           form.append("image_file", file);
           form.append("size", "auto");
 
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 12000);
           const res = await fetch("https://api.remove.bg/v1.0/removebg", {
             method: "POST",
             headers: { "X-Api-Key": apiKey },
-            body: form
+            body: form,
+            signal: controller.signal
           });
+          clearTimeout(timeout);
 
           if (res.ok) {
             const blob = await res.blob();
@@ -1321,6 +1358,16 @@
       document.getElementById("openSettingsBtn").title = labels.settings_title;
       document.getElementById("coverPlusBtn").title = labels.cover_change;
       document.getElementById("avatarPlusBtn").title = labels.avatar_change;
+      document.getElementById("lastNameInput").placeholder = labels.last_name;
+      document.getElementById("firstNameInput").placeholder = labels.first_name;
+      document.getElementById("nicknameInput").placeholder = labels.nickname;
+      document.getElementById("weatherCityInput").placeholder = labels.weather_city;
+      document.getElementById("genderInput").options[0].textContent = labels.gender_female;
+      document.getElementById("genderInput").options[1].textContent = labels.gender_male;
+      document.getElementById("targetGender").options[0].textContent = labels.gender_unisex;
+      document.getElementById("targetGender").options[1].textContent = labels.gender_female;
+      document.getElementById("targetGender").options[2].textContent = labels.gender_male;
+      document.getElementById("profileGenderLabel").textContent = (state.profile.gender === "male" ? labels.gender_male : labels.gender_female).toLowerCase();
       renderModeCycle();
       renderItems();
       renderOutfits();
@@ -1367,7 +1414,10 @@
           advice_mild: "Kellemes idő: póló + nadrág/szoknya + kényelmes cipő.",
           advice_hot: "Meleg idő: könnyű, szellős ruházat és világos színek ajánlott.",
           cover_change: "Background csere", avatar_change: "Profilkép csere",
-          cat_top: "Pólók", cat_bottom: "Nadrágok", cat_hoodie: "Pulcsik", cat_coat: "Kabátok", cat_shoes: "Cipők", cat_dress: "Ruhák"
+          cat_top: "Pólók", cat_bottom: "Nadrágok", cat_hoodie: "Pulcsik", cat_coat: "Kabátok", cat_shoes: "Cipők", cat_dress: "Ruhák",
+          last_name: "Vezetéknév", first_name: "Keresztnév", nickname: "Becenév", weather_city: "Időjárás város (pl. Budapest)",
+          gender_female: "Nő", gender_male: "Férfi", gender_unisex: "Unisex",
+          upload_failed: "A képfeltöltés sikertelen volt.", ai_removebg_ok: "✅ AI + háttér eltávolítás sikeres.", upload_fallback_info: "⚠️ Feltöltve, de részben fallback módban."
         },
         en: {
           community: "Community", planner: "Planner", styling: "Styling", wardrobe: "WARDROBE",
@@ -1385,32 +1435,56 @@
           advice_mild: "Mild weather: t-shirt + pants/skirt + comfy shoes.",
           advice_hot: "Hot weather: light breathable fabrics and bright colors.",
           cover_change: "Change background", avatar_change: "Change profile photo",
-          cat_top: "Tops", cat_bottom: "Bottoms", cat_hoodie: "Hoodies", cat_coat: "Coats", cat_shoes: "Shoes", cat_dress: "Dresses"
+          cat_top: "Shirts", cat_bottom: "Pants", cat_hoodie: "Hoodies", cat_coat: "Coats", cat_shoes: "Shoes", cat_dress: "Dresses",
+          last_name: "Last name", first_name: "First name", nickname: "Nickname", weather_city: "Weather city (e.g. Budapest)",
+          gender_female: "Female", gender_male: "Male", gender_unisex: "Unisex",
+          upload_failed: "Image upload failed.", ai_removebg_ok: "✅ AI + background removal succeeded.", upload_fallback_info: "⚠️ Upload saved with partial fallback."
+        },
+        de: {
+          community: "Community", planner: "Planer", styling: "Styling", wardrobe: "KLEIDERSCHRANK",
+          community_title: "Community", planner_title: "Planer", styling_title: "Styling", wardrobe_title: "KLEIDERSCHRANK",
+          settings_title: "Profileinstellungen", community_soon: "Dieser Bereich kommt bald.", community_full: "Diese Ansicht ist volle Breite.",
+          styling_desc: "Generierte Outfits erscheinen unten als große Bilder.", generate: "🎯 Outfit generieren", outfit_like: "❤️ Outfit liken",
+          save_planner: "Im Planer speichern", clothes: "Kleidung", saved_outfits: "Gespeicherte Outfits", save_profile: "Profil speichern", dark_mode: "Dunkelmodus",
+          close: "Schließen", weather_app: "Wetter", wear_reco: "Was soll ich anziehen?", not_set: "nicht gesetzt", add: "Hinzufügen",
+          no_uploaded_items: "Noch keine hochgeladenen Teile.", no_saved_outfit: "Noch keine gespeicherten Outfits.", pieces: "Teile",
+          like: "❤️ like", unlike: "💔 unlike", hide: "🙈 hide", unhide: "🙈 unhide", style_label: "Stil", color_label: "Farbe",
+          weather_unavailable: "Wetter nicht verfügbar", weather_loading: "Wetter wird geladen...", weather_try_later: "Bitte in ein paar Sekunden erneut versuchen.",
+          advice_storm: "Sturm erwartet: wasserdichte Jacke und geschlossene Schuhe empfohlen.",
+          advice_rain: "Regenwetter: Regenjacke und wasserdichte Schuhe empfohlen.",
+          advice_cold: "Sehr kalt: Schichten, dicker Mantel, Schal und Stiefel.",
+          advice_cool: "Kühles Wetter: Hoodie und leichte Jacke sind ideal.",
+          advice_mild: "Mildes Wetter: Shirt + Hose/Rock + bequeme Schuhe.",
+          advice_hot: "Heißes Wetter: leichte, atmungsaktive Stoffe und helle Farben.",
+          cover_change: "Hintergrund ändern", avatar_change: "Profilfoto ändern",
+          cat_top: "Shirts", cat_bottom: "Hosen", cat_hoodie: "Hoodies", cat_coat: "Mäntel", cat_shoes: "Schuhe", cat_dress: "Kleider",
+          last_name: "Nachname", first_name: "Vorname", nickname: "Spitzname", weather_city: "Wetterstadt (z.B. Berlin)",
+          gender_female: "Frau", gender_male: "Mann", gender_unisex: "Unisex",
+          upload_failed: "Bild-Upload fehlgeschlagen.", ai_removebg_ok: "✅ KI + Hintergrund entfernen erfolgreich.", upload_fallback_info: "⚠️ Upload gespeichert, teilweise Fallback."
         }
       };
-      if (lang === "de") return { ...dict.en, community: "Community", planner: "Planer", wardrobe: "KLEIDERSCHRANK", wardrobe_title: "KLEIDERSCHRANK", settings_title: "Profileinstellungen", close: "Schließen", add: "Hinzufügen" };
-      if (lang === "uk") return { ...dict.en, community: "Спільнота", planner: "Планер", styling: "Стиль", wardrobe: "ГАРДЕРОБ", wardrobe_title: "ГАРДЕРОБ", settings_title: "Налаштування профілю", close: "Закрити", add: "Додати" };
-      if (lang === "zh") return { ...dict.en, community: "社区", planner: "计划", styling: "穿搭", wardrobe: "衣橱", wardrobe_title: "衣橱", settings_title: "个人设置", close: "关闭", add: "添加" };
+      if (lang === "uk") return { ...dict.en, community: "Спільнота", planner: "Планер", styling: "Стиль", wardrobe: "ГАРДЕРОБ", wardrobe_title: "ГАРДЕРОБ", settings_title: "Налаштування профілю", close: "Закрити", add: "Додати", last_name: "Прізвище", first_name: "Ім'я", nickname: "Нікнейм", weather_city: "Місто погоди", gender_female: "Жінка", gender_male: "Чоловік", gender_unisex: "Унісекс", cat_top: "Shirts" };
+      if (lang === "zh") return { ...dict.en, community: "社区", planner: "计划", styling: "穿搭", wardrobe: "衣橱", wardrobe_title: "衣橱", settings_title: "个人设置", close: "关闭", add: "添加", last_name: "姓氏", first_name: "名字", nickname: "昵称", weather_city: "天气城市", gender_female: "女", gender_male: "男", gender_unisex: "中性", cat_top: "Shirts" };
       return dict[lang] || dict.hu;
     }
 
     function translateType(type) {
       const map = {
-        felso: { hu: "felső", en: "top" }, also: { hu: "alsó", en: "bottom" }, szoknya: { hu: "szoknya", en: "skirt" },
-        pulcsi: { hu: "pulcsi", en: "hoodie" }, kabat: { hu: "kabát", en: "coat" }, dress: { hu: "ruha", en: "dress" }, cipo: { hu: "cipő", en: "shoes" }
+        felso: { hu: "felső", en: "shirt", de: "Shirt" }, also: { hu: "alsó", en: "pants", de: "Hose" }, szoknya: { hu: "szoknya", en: "skirt", de: "Rock" },
+        pulcsi: { hu: "pulcsi", en: "hoodie", de: "Hoodie" }, kabat: { hu: "kabát", en: "coat", de: "Mantel" }, dress: { hu: "ruha", en: "dress", de: "Kleid" }, cipo: { hu: "cipő", en: "shoes", de: "Schuhe" }
       };
       const lang = state.profile.language || "hu";
       return map[type]?.[lang] || map[type]?.hu || type;
     }
 
     function translateStyle(style) {
-      const map = { casual: { hu: "casual", en: "casual" }, elegant: { hu: "elegáns", en: "elegant" }, sport: { hu: "sportos", en: "sport" } };
+      const map = { casual: { hu: "casual", en: "casual", de: "casual" }, elegant: { hu: "elegáns", en: "elegant", de: "elegant" }, sport: { hu: "sportos", en: "sport", de: "sportlich" } };
       const lang = state.profile.language || "hu";
       return map[style]?.[lang] || style;
     }
 
     function translateColor(color) {
-      const map = { black: { hu: "fekete", en: "black" }, white: { hu: "fehér", en: "white" }, red: { hu: "piros", en: "red" }, blue: { hu: "kék", en: "blue" }, green: { hu: "zöld", en: "green" }, neutral: { hu: "semleges", en: "neutral" } };
+      const map = { black: { hu: "fekete", en: "black", de: "schwarz" }, white: { hu: "fehér", en: "white", de: "weiß" }, red: { hu: "piros", en: "red", de: "rot" }, blue: { hu: "kék", en: "blue", de: "blau" }, green: { hu: "zöld", en: "green", de: "grün" }, neutral: { hu: "semleges", en: "neutral", de: "neutral" } };
       const lang = state.profile.language || "hu";
       return map[color]?.[lang] || color;
     }
@@ -1444,7 +1518,9 @@
     function weatherCodeToText(code) {
       const hu = [ "derült", "felhős", "köd", "eső", "hó", "vihar", "vegyes" ];
       const en = [ "clear", "cloudy", "fog", "rain", "snow", "storm", "mixed" ];
-      const words = (state.profile.language || "hu") === "en" ? en : hu;
+      const de = [ "klar", "wolkig", "Nebel", "Regen", "Schnee", "Sturm", "gemischt" ];
+      const lang = state.profile.language || "hu";
+      const words = lang === "de" ? de : (lang === "en" ? en : hu);
       if ([0].includes(code)) return words[0];
       if ([1, 2, 3].includes(code)) return words[1];
       if ([45, 48].includes(code)) return words[2];
