@@ -653,6 +653,8 @@
 
   <script>
     const STORE_KEY = "outfit_app_state_v4";
+    const MAX_UPLOAD_IMAGE_SIZE = 1280;
+    const UPLOAD_IMAGE_QUALITY = 0.82;
 
     const state = loadState();
     let currentPage = "stylingPage";
@@ -718,7 +720,13 @@
     }
 
     function saveState() {
-      localStorage.setItem(STORE_KEY, JSON.stringify(state));
+      try {
+        localStorage.setItem(STORE_KEY, JSON.stringify(state));
+        return true;
+      } catch (e) {
+        alert(getLabels().storage_full);
+        return false;
+      }
     }
 
     function bindNav() {
@@ -1004,10 +1012,14 @@
     }
 
     async function processProfileImageUpload(file, targetField) {
+      const previousValue = state.profile[targetField];
       try {
-        const imageUrl = await fileToDataUrl(file);
+        const imageUrl = await imageFileToOptimizedDataUrl(file, { maxSize: 1080, format: "image/webp", quality: 0.85 });
         state.profile[targetField] = imageUrl;
-        saveState();
+        if (!saveState()) {
+          state.profile[targetField] = previousValue;
+          return;
+        }
         renderProfile();
       } catch (e) {
         alert(getLabels().upload_failed);
@@ -1015,14 +1027,14 @@
     }
 
     async function processClothing(file, forcedType = null) {
-      const fallbackImage = await fileToDataUrl(file);
+      const fallbackImage = await imageFileToOptimizedDataUrl(file, { format: "image/webp" });
       let imageUrl = fallbackImage;
       let removeBgOk = false;
 
       try {
         const processedImage = await removeBackgroundSmart(file);
         if (processedImage) {
-          imageUrl = processedImage;
+          imageUrl = await optimizeDataUrl(processedImage, { format: "image/webp", quality: 0.9 });
           removeBgOk = true;
         }
       } catch (e) {}
@@ -1058,7 +1070,11 @@
         createdAt: new Date().toISOString()
       });
 
-      saveState();
+      const persisted = saveState();
+      if (!persisted) {
+        state.items.pop();
+        return;
+      }
       renderAll();
 
       aiStatus.textContent = aiOk && removeBgOk
@@ -1290,6 +1306,29 @@
       });
     }
 
+    async function imageFileToOptimizedDataUrl(file, options = {}) {
+      const base64 = await fileToDataUrl(file);
+      return optimizeDataUrl(base64, options);
+    }
+
+    async function optimizeDataUrl(dataUrl, options = {}) {
+      const maxSize = options.maxSize || MAX_UPLOAD_IMAGE_SIZE;
+      const quality = options.quality || UPLOAD_IMAGE_QUALITY;
+      const format = options.format || "image/jpeg";
+      const img = await loadImage(dataUrl);
+
+      const ratio = Math.min(1, maxSize / Math.max(img.width, img.height));
+      const width = Math.max(1, Math.round(img.width * ratio));
+      const height = Math.max(1, Math.round(img.height * ratio));
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, width, height);
+      return canvas.toDataURL(format, quality);
+    }
+
     async function blobToDataUrl(blob) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -1417,7 +1456,7 @@
           cat_top: "Pólók", cat_bottom: "Nadrágok", cat_hoodie: "Pulcsik", cat_coat: "Kabátok", cat_shoes: "Cipők", cat_dress: "Ruhák",
           last_name: "Vezetéknév", first_name: "Keresztnév", nickname: "Becenév", weather_city: "Időjárás város (pl. Budapest)",
           gender_female: "Nő", gender_male: "Férfi", gender_unisex: "Unisex",
-          upload_failed: "A képfeltöltés sikertelen volt.", ai_removebg_ok: "✅ AI + háttér eltávolítás sikeres.", upload_fallback_info: "⚠️ Feltöltve, de részben fallback módban."
+          upload_failed: "A képfeltöltés sikertelen volt.", ai_removebg_ok: "✅ AI + háttér eltávolítás sikeres.", upload_fallback_info: "⚠️ Feltöltve, de részben fallback módban.", storage_full: "Nincs elég tárhely a böngészőben. Törölj néhány régi képet, majd próbáld újra."
         },
         en: {
           community: "Community", planner: "Planner", styling: "Styling", wardrobe: "WARDROBE",
@@ -1438,7 +1477,7 @@
           cat_top: "Shirts", cat_bottom: "Pants", cat_hoodie: "Hoodies", cat_coat: "Coats", cat_shoes: "Shoes", cat_dress: "Dresses",
           last_name: "Last name", first_name: "First name", nickname: "Nickname", weather_city: "Weather city (e.g. Budapest)",
           gender_female: "Female", gender_male: "Male", gender_unisex: "Unisex",
-          upload_failed: "Image upload failed.", ai_removebg_ok: "✅ AI + background removal succeeded.", upload_fallback_info: "⚠️ Upload saved with partial fallback."
+          upload_failed: "Image upload failed.", ai_removebg_ok: "✅ AI + background removal succeeded.", upload_fallback_info: "⚠️ Upload saved with partial fallback.", storage_full: "Not enough browser storage. Remove a few older photos, then try again."
         },
         de: {
           community: "Community", planner: "Planer", styling: "Styling", wardrobe: "KLEIDERSCHRANK",
@@ -1460,7 +1499,7 @@
           cat_top: "Shirts", cat_bottom: "Hosen", cat_hoodie: "Hoodies", cat_coat: "Mäntel", cat_shoes: "Schuhe", cat_dress: "Kleider",
           last_name: "Nachname", first_name: "Vorname", nickname: "Spitzname", weather_city: "Wetterstadt (z.B. Berlin)",
           gender_female: "Frau", gender_male: "Mann", gender_unisex: "Unisex",
-          upload_failed: "Bild-Upload fehlgeschlagen.", ai_removebg_ok: "✅ KI + Hintergrund entfernen erfolgreich.", upload_fallback_info: "⚠️ Upload gespeichert, teilweise Fallback."
+          upload_failed: "Bild-Upload fehlgeschlagen.", ai_removebg_ok: "✅ KI + Hintergrund entfernen erfolgreich.", upload_fallback_info: "⚠️ Upload gespeichert, teilweise Fallback.", storage_full: "Nicht genug Browser-Speicher. Lösche einige ältere Fotos und versuche es erneut."
         }
       };
       if (lang === "uk") return { ...dict.en, community: "Спільнота", planner: "Планер", styling: "Стиль", wardrobe: "ГАРДЕРОБ", wardrobe_title: "ГАРДЕРОБ", settings_title: "Налаштування профілю", close: "Закрити", add: "Додати", last_name: "Прізвище", first_name: "Ім'я", nickname: "Нікнейм", weather_city: "Місто погоди", gender_female: "Жінка", gender_male: "Чоловік", gender_unisex: "Унісекс", cat_top: "Shirts" };
