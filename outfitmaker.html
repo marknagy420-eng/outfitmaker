@@ -172,31 +172,26 @@
     }
 
     .styling-list {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+      align-items: start;
     }
 
     .style-piece {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      overflow: hidden;
       width: 100%;
+      display: grid;
+      place-items: center;
+      min-height: 180px;
     }
 
     .style-piece img {
       width: 100%;
-      height: min(55vh, 460px);
-      object-fit: cover;
+      max-height: 220px;
+      object-fit: contain;
+      object-position: center;
       display: block;
-      background: var(--surface-alt);
-    }
-
-    .style-piece .meta {
-      padding: 12px;
-      font-size: 14px;
-      font-weight: 700;
+      background: transparent;
     }
 
     .profile-shell {
@@ -489,6 +484,20 @@
       <button id="weatherBtn" class="weather-btn">🌦️ <span id="weather">Időjárás betöltése...</span></button>
       <div id="clock">--:--:--</div>
     </div>
+    <section id="weatherPanel" class="section-block hidden">
+      <div class="weather-app-head">
+        <h3 data-i18n="weather_app">Időjárás</h3>
+        <button class="btn ghost" id="closeWeatherBtn" data-i18n="close">Bezárás</button>
+      </div>
+      <div class="weather-hero">
+        <h2 id="weatherAppNow">--</h2>
+        <p id="weatherAppCity">--</p>
+      </div>
+      <div class="section-block">
+        <h4 data-i18n="wear_reco">Mit érdemes felvenni?</h4>
+        <p id="weatherClothingAdvice">--</p>
+      </div>
+    </section>
 
     <section id="communityPage" class="page">
       <h1 data-i18n="community_title">Community</h1>
@@ -636,21 +645,6 @@
       <button class="btn ghost" id="closeSettingsBtn" data-i18n="close">Bezárás</button>
     </div>
   </dialog>
-  <dialog id="weatherDialog">
-    <div class="weather-app-head">
-      <h3 data-i18n="weather_app">Időjárás</h3>
-      <button class="btn ghost" id="closeWeatherBtn" data-i18n="close">Bezárás</button>
-    </div>
-    <div class="weather-hero">
-      <h2 id="weatherAppNow">--</h2>
-      <p id="weatherAppCity">--</p>
-    </div>
-    <div class="section-block">
-      <h4 data-i18n="wear_reco">Mit érdemes felvenni?</h4>
-      <p id="weatherClothingAdvice">--</p>
-    </div>
-  </dialog>
-
   <script>
     const STORE_KEY = "outfit_app_state_v4";
     const LEGACY_STORE_KEY = "outfit_app_state_v3";
@@ -680,6 +674,7 @@
     init();
 
     async function init() {
+      await clearPersistentStorageOnRefresh();
       const hydrated = await hydrateStateFromStorage();
       if (!hydrated) {
         Object.assign(state, loadStateFromLocalStorage());
@@ -742,6 +737,24 @@
       }
 
       return defaultState();
+    }
+
+    async function clearPersistentStorageOnRefresh() {
+      try {
+        localStorage.removeItem(STORE_KEY);
+        localStorage.removeItem(LEGACY_STORE_KEY);
+      } catch (e) {}
+
+      try {
+        if (window.indexedDB) {
+          await new Promise(resolve => {
+            const req = window.indexedDB.deleteDatabase(DB_NAME);
+            req.onsuccess = () => resolve();
+            req.onerror = () => resolve();
+            req.onblocked = () => resolve();
+          });
+        }
+      } catch (e) {}
     }
 
     function openStateDb() {
@@ -869,7 +882,9 @@
 
       document.getElementById("saveProfileBtn").addEventListener("click", saveProfile);
       document.getElementById("weatherBtn").addEventListener("click", openWeatherDialog);
-      document.getElementById("closeWeatherBtn").addEventListener("click", () => document.getElementById("weatherDialog").close());
+      document.getElementById("closeWeatherBtn").addEventListener("click", () => {
+        document.getElementById("weatherPanel").classList.add("hidden");
+      });
       document.getElementById("avatarPlusBtn").addEventListener("click", () => document.getElementById("avatarInput").click());
       document.getElementById("coverPlusBtn").addEventListener("click", () => document.getElementById("coverInput").click());
 
@@ -1288,20 +1303,37 @@
 
       let r = 0, g = 0, b = 0, count = 0;
       for (let i = 0; i < data.length; i += 4) {
+        if (data[i + 3] < 30) continue;
         r += data[i];
         g += data[i + 1];
         b += data[i + 2];
         count++;
       }
+      if (!count) return "neutral";
       r = Math.floor(r / count);
       g = Math.floor(g / count);
       b = Math.floor(b / count);
+
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      const delta = max - min;
+      const isLowSat = delta < 18;
+      const brightness = (r + g + b) / 3;
+
+      if (isLowSat && brightness > 210) return "white";
+      if (isLowSat && brightness < 55) return "black";
+      if (isLowSat && brightness < 140) return "gray";
+      if (isLowSat) return "beige";
 
       if (r < 60 && g < 60 && b < 60) return "black";
       if (r > 220 && g > 220 && b > 220) return "white";
       if (r > 160 && g < 110 && b < 110) return "red";
       if (b > 150 && r < 120) return "blue";
       if (g > 130 && r < 120) return "green";
+      if (r > 160 && g > 120 && b < 110) return "yellow";
+      if (r > 160 && g > 90 && g < 150 && b < 90) return "orange";
+      if (r > 120 && b > 120 && g < 120) return "purple";
+      if (r > 140 && g > 100 && b > 80 && b < 140) return "brown";
       return "neutral";
     }
 
@@ -1361,10 +1393,6 @@
       outfitView.innerHTML = selected.map(piece => `
         <article class="style-piece">
           <img src="${piece.image}" alt="${piece.type}" />
-          <div class="meta">
-            <strong>${piece.type}</strong><br />
-            ${piece.style} · ${piece.color}
-          </div>
         </article>
       `).join("");
     }
@@ -1618,25 +1646,40 @@
     }
 
     function translateColor(color) {
-      const map = { black: { hu: "fekete", en: "black", de: "schwarz" }, white: { hu: "fehér", en: "white", de: "weiß" }, red: { hu: "piros", en: "red", de: "rot" }, blue: { hu: "kék", en: "blue", de: "blau" }, green: { hu: "zöld", en: "green", de: "grün" }, neutral: { hu: "semleges", en: "neutral", de: "neutral" } };
+      const map = {
+        black: { hu: "fekete", en: "black", de: "schwarz" },
+        white: { hu: "fehér", en: "white", de: "weiß" },
+        gray: { hu: "szürke", en: "gray", de: "grau" },
+        beige: { hu: "bézs", en: "beige", de: "beige" },
+        red: { hu: "piros", en: "red", de: "rot" },
+        blue: { hu: "kék", en: "blue", de: "blau" },
+        green: { hu: "zöld", en: "green", de: "grün" },
+        yellow: { hu: "sárga", en: "yellow", de: "gelb" },
+        orange: { hu: "narancs", en: "orange", de: "orange" },
+        purple: { hu: "lila", en: "purple", de: "lila" },
+        brown: { hu: "barna", en: "brown", de: "braun" },
+        neutral: { hu: "semleges", en: "neutral", de: "neutral" }
+      };
       const lang = state.profile.language || "hu";
       return map[color]?.[lang] || color;
     }
 
     function openWeatherDialog() {
       const t = getLabels();
-      const dialog = document.getElementById("weatherDialog");
+      const panel = document.getElementById("weatherPanel");
       if (!latestWeather) {
         document.getElementById("weatherAppNow").textContent = t.weather_unavailable;
         document.getElementById("weatherAppCity").textContent = "";
         document.getElementById("weatherClothingAdvice").textContent = t.weather_try_later;
-        dialog.showModal();
+        panel.classList.remove("hidden");
+        panel.scrollIntoView({ behavior: "smooth", block: "start" });
         return;
       }
       document.getElementById("weatherAppNow").textContent = `${latestWeather.temp}°C · ${weatherCodeToText(latestWeather.code)}`;
       document.getElementById("weatherAppCity").textContent = latestWeather.city;
       document.getElementById("weatherClothingAdvice").textContent = getClothingAdvice(latestWeather.temp, latestWeather.code);
-      dialog.showModal();
+      panel.classList.remove("hidden");
+      panel.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function getClothingAdvice(temp, code) {
