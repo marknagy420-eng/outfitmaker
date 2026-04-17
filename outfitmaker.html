@@ -6,11 +6,11 @@
   <title>AI Outfit App</title>
   <style>
     :root {
-      --bg: #ffffff;
-      --fg: #000000;
-      --muted: #666666;
+      --bg: #f4f5f8;
+      --fg: #121212;
+      --muted: #666;
       --line: #d9d9d9;
-      --card: #f8f8f8;
+      --panel: #ffffff;
     }
 
     * { box-sizing: border-box; }
@@ -25,9 +25,7 @@
     button,
     select,
     input,
-    textarea {
-      font: inherit;
-    }
+    textarea { font: inherit; }
 
     .app-shell {
       min-height: 100vh;
@@ -39,45 +37,27 @@
     .top-strip {
       position: sticky;
       top: 0;
-      z-index: 8;
+      z-index: 30;
       background: #fff;
       border-bottom: 1px solid var(--line);
       padding: 12px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 8px;
       font-size: 14px;
-    }
-
-    .top-strip #weather {
       font-weight: 700;
-    }
-
-    .top-strip #clock {
-      font-weight: 700;
-      white-space: nowrap;
     }
 
     .page {
       display: none;
-      padding: 16px;
-      max-width: 980px;
       width: 100%;
-      margin: 0 auto;
+      min-height: calc(100vh - 124px);
+      padding: 16px;
     }
 
     .page.active { display: block; }
 
-    h1, h2, h3 { margin: 8px 0 10px; }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 14px;
-      margin: 12px 0;
-    }
+    h1, h2, h3 { margin: 0 0 12px; }
 
     .btn,
     .icon-btn {
@@ -95,10 +75,7 @@
       color: #000;
     }
 
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
     .row {
       display: flex;
@@ -107,79 +84,23 @@
       align-items: center;
     }
 
-    .grid {
-      display: grid;
-      gap: 12px;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    }
-
-    .piece {
+    .section-block {
+      background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 10px;
-      background: #fff;
-      overflow: hidden;
-    }
-
-    .piece img {
+      border-radius: 12px;
+      padding: 14px;
+      margin: 0 0 12px;
       width: 100%;
-      aspect-ratio: 1 / 1;
-      object-fit: cover;
-      display: block;
-      background: #efefef;
-    }
-
-    .piece .meta {
-      padding: 8px;
-      font-size: 12px;
     }
 
     .muted { color: var(--muted); }
-
-    .profile-cover {
-      position: relative;
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      overflow: hidden;
-      background: #eee;
-      min-height: 150px;
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      align-items: flex-end;
-      padding: 12px;
-    }
-
-    .avatar {
-      width: 84px;
-      height: 84px;
-      border-radius: 50%;
-      border: 3px solid #fff;
-      background: #ddd center/cover no-repeat;
-      margin-right: 10px;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .stat {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: #fff;
-      padding: 10px;
-      text-align: center;
-      font-size: 14px;
-    }
 
     .bottom-nav {
       position: fixed;
       left: 0;
       right: 0;
       bottom: 0;
-      z-index: 20;
+      z-index: 40;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       border-top: 1px solid var(--line);
@@ -201,15 +122,15 @@
     .mode-bar {
       position: sticky;
       top: 48px;
-      z-index: 7;
+      z-index: 20;
       background: #fff;
-      border-bottom: 1px solid var(--line);
-      padding: 10px 16px;
-      margin: 0 -16px 10px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 12px;
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      align-items: center;
     }
 
     .mode-btn {
@@ -217,14 +138,256 @@
       border-radius: 999px;
       background: #fff;
       color: #000;
-      padding: 6px 12px;
+      padding: 8px 14px;
       cursor: pointer;
+      font-weight: 700;
     }
 
-    .mode-btn.active {
+    .mode-btn.active { background: #000; color: #fff; }
+
+    .status-pill {
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 12px;
+      border: 1px solid var(--line);
+      display: inline-block;
+      margin-bottom: 10px;
+      background: #fff;
+    }
+
+    .styling-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .style-piece {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .style-piece img {
+      width: 100%;
+      height: min(55vh, 460px);
+      object-fit: cover;
+      display: block;
+      background: #efefef;
+    }
+
+    .style-piece .meta {
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .profile-shell {
+      width: 100%;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .profile-cover {
+      position: relative;
+      min-height: 260px;
+      background: #d7d9de center/cover no-repeat;
+      display: flex;
+      align-items: flex-end;
+      padding: 16px;
+    }
+
+    .avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 4px solid #fff;
+      background: #ddd center/cover no-repeat;
+      margin-right: 12px;
+      position: relative;
+    }
+
+    .plus-fab {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      border: 0;
+      border-radius: 50%;
+      width: 34px;
+      height: 34px;
       background: #000;
       color: #fff;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
     }
+
+    .avatar .plus-fab {
+      top: auto;
+      bottom: 2px;
+      right: 2px;
+      width: 30px;
+      height: 30px;
+      font-size: 18px;
+    }
+
+    .profile-title {
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .profile-body { padding: 14px; }
+
+    .name-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .name-grid input,
+    .name-grid select,
+    .planner-toolbar input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fff;
+    }
+
+    .section-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .category-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .category-group {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px;
+    }
+
+    .item-row {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+
+    .item-card {
+      min-width: 210px;
+      max-width: 210px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .item-card img {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      display: block;
+      background: #efefef;
+    }
+
+    .item-card .meta {
+      padding: 8px;
+      font-size: 12px;
+    }
+
+    .add-on-wardrobe {
+      position: fixed;
+      right: 16px;
+      bottom: 90px;
+      z-index: 35;
+      border-radius: 999px;
+      padding: 12px 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.24);
+      display: none;
+    }
+
+    .add-on-wardrobe.show { display: inline-flex; }
+
+    .planner-layout {
+      width: 100%;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .planner-toolbar {
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .calendar-head {
+      font-weight: 700;
+      text-align: center;
+      font-size: 13px;
+      color: #222;
+      padding-bottom: 4px;
+    }
+
+    .day-cell {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      min-height: 140px;
+      padding: 6px;
+      background: #fff;
+    }
+
+    .day-cell.today { border-color: #000; }
+
+    .day-number {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .mini-piece {
+      display: block;
+      width: 100%;
+      height: 34px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 4px;
+      border: 1px solid #e2e2e2;
+    }
+
+    .empty-day {
+      background: #f5f5f5;
+      border: 1px dashed #e3e3e3;
+    }
+
+    .hidden { display: none !important; }
 
     dialog {
       border: 1px solid var(--line);
@@ -235,26 +398,6 @@
     }
 
     dialog::backdrop { background: rgba(0,0,0,0.4); }
-
-    .hidden { display: none !important; }
-
-    .status-pill {
-      border-radius: 999px;
-      padding: 4px 8px;
-      font-size: 12px;
-      border: 1px solid var(--line);
-      display: inline-block;
-      margin-bottom: 8px;
-      background: #fff;
-    }
-
-    .calendar-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 10px;
-    }
   </style>
 </head>
 <body>
@@ -266,31 +409,25 @@
 
     <section id="communityPage" class="page">
       <h1>Community</h1>
-      <div class="card">
+      <div class="section-block">
         <p>Ez a rész később készül el.</p>
-        <p class="muted">(A menüpont már bekerült a navigációba.)</p>
+        <p class="muted">A nézet most teljes szélességű.</p>
       </div>
     </section>
 
     <section id="plannerPage" class="page">
       <h1>Planner</h1>
-      <div class="card">
-        <h3>Napi outfit mentése</h3>
-        <div class="calendar-row">
-          <input id="plannerDate" type="date" />
-          <button class="btn" id="savePlannerBtn">Mentés a naphoz</button>
+      <div class="planner-layout">
+        <div class="planner-toolbar">
+          <input id="plannerMonth" type="month" />
         </div>
-        <p class="muted" id="plannerHint">Generálj outfitet a Styling oldalon, majd mentsd ide.</p>
-      </div>
-      <div class="card">
-        <h3>Mentett napok</h3>
-        <div id="plannerList" class="grid"></div>
+        <div id="plannerCalendar"></div>
       </div>
     </section>
 
-    <section id="stylingPage" class="page">
+    <section id="stylingPage" class="page active">
       <div class="mode-bar">
-        <button class="mode-btn" data-mode="2">2 részes</button>
+        <button class="mode-btn" data-mode="2" id="mode2Btn">2 részes</button>
         <button class="mode-btn active" data-mode="3">3 részes</button>
         <button class="mode-btn" data-mode="4">4 részes</button>
         <button class="mode-btn" data-mode="5">5 részes</button>
@@ -298,69 +435,68 @@
       </div>
 
       <h1>Styling</h1>
-      <div class="card">
-        <p>
-          A rendszer a profil nemed alapján ajánl. Női profilnál női/unisex,
-          férfi profilnál férfi/unisex darabokat használ.
-        </p>
+      <div class="section-block">
+        <p>A generált ruhák egymás alatt, nagy képekkel jelennek meg.</p>
         <div class="row">
           <button class="btn" id="generateBtn">🎯 Outfit generálás</button>
           <button class="btn ghost" id="likeOutfitBtn">❤️ Outfit like</button>
+          <input id="plannerDate" type="date" />
+          <button class="btn ghost" id="savePlannerBtn">Mentés a Plannerbe</button>
         </div>
       </div>
 
-      <div class="card">
+      <div class="section-block">
         <span id="aiStatus" class="status-pill">Fallback mód aktív, ha az API nem elérhető.</span>
-        <div id="outfitView" class="grid"></div>
+        <div id="outfitView" class="styling-list"></div>
       </div>
     </section>
 
     <section id="wardrobePage" class="page">
-      <h1>Wardrobe (Account)</h1>
-      <div class="card">
+      <div class="section-header-row">
+        <h1 id="wardrobeHeader">Wardrobe (Account)</h1>
+        <strong id="wardrobeTopRight">Név nélkül wardrobe-ja</strong>
+      </div>
+
+      <div class="profile-shell">
         <div id="coverBox" class="profile-cover">
-          <div class="avatar" id="avatarBox"></div>
-          <div>
-            <strong id="profileNameLabel">Név nélkül</strong><br />
+          <button id="coverPlusBtn" class="plus-fab" title="Background csere">+</button>
+          <div id="avatarBox" class="avatar">
+            <button id="avatarPlusBtn" class="plus-fab" title="Profilkép csere">+</button>
+          </div>
+          <div class="profile-title" id="profileNameLabel">Név nélkül</div>
+        </div>
+
+        <div class="profile-body">
+          <h3>Beállítások</h3>
+          <div class="name-grid">
+            <input id="lastNameInput" placeholder="Vezetéknév" />
+            <input id="firstNameInput" placeholder="Keresztnév" />
+            <input id="nicknameInput" placeholder="Nickname" />
+            <select id="genderInput">
+              <option value="female">Nő</option>
+              <option value="male">Férfi</option>
+            </select>
+          </div>
+          <div class="row" style="margin-top:10px;">
+            <button class="btn" id="saveProfileBtn">Profil mentés</button>
             <span class="muted" id="profileGenderLabel">nem beállítva</span>
           </div>
         </div>
-
-        <div class="row" style="margin-top: 10px;">
-          <input id="nameInput" placeholder="Név" />
-          <select id="genderInput">
-            <option value="female">Nő</option>
-            <option value="male">Férfi</option>
-          </select>
-          <button class="btn" id="saveProfileBtn">Profil mentés</button>
-        </div>
-
-        <div class="row" style="margin-top: 10px;">
-          <label>Profilkép <input id="avatarInput" type="file" accept="image/*" /></label>
-          <label>Background <input id="coverInput" type="file" accept="image/*" /></label>
-        </div>
-
-        <div class="stats">
-          <div class="stat"><strong id="itemsCount">0</strong><br />items</div>
-          <div class="stat"><strong id="outfitsCount">0</strong><br />outfits</div>
-          <div class="stat"><strong id="likedCount">0</strong><br />liked</div>
-        </div>
       </div>
 
-      <div class="card">
-        <div class="row" style="justify-content: space-between;">
-          <h3>Ruhák</h3>
-          <button class="btn" id="openUploaderBtn">＋ Hozzáadás</button>
-        </div>
-        <div id="itemsGrid" class="grid"></div>
+      <div class="section-block">
+        <h3>Ruhák</h3>
+        <div id="itemsByCategory" class="category-stack"></div>
       </div>
 
-      <div class="card">
+      <div class="section-block">
         <h3>Elmentett outfitek</h3>
-        <div id="savedOutfits" class="grid"></div>
+        <div id="savedOutfits" class="category-stack"></div>
       </div>
     </section>
   </div>
+
+  <button class="btn add-on-wardrobe" id="openUploaderBtn">＋ Hozzáadás</button>
 
   <nav class="bottom-nav">
     <button class="nav-btn" data-page="communityPage">Community</button>
@@ -380,7 +516,7 @@
       <input id="uploadFile" type="file" accept="image/*" />
     </div>
 
-    <div id="itemExtra" class="card">
+    <div id="itemExtra" class="section-block">
       <h4>Item adatok</h4>
       <div class="row">
         <select id="manualType">
@@ -389,7 +525,7 @@
           <option value="szoknya">Szoknya</option>
           <option value="pulcsi">Pulcsi</option>
           <option value="kabat">Kabát</option>
-          <option value="dress">Egyberuha</option>
+          <option value="dress">Ruha</option>
           <option value="cipo">Cipő</option>
         </select>
         <select id="manualStyle">
@@ -403,7 +539,6 @@
           <option value="male">Férfi</option>
         </select>
       </div>
-      <p class="muted">Ha AI nem működik, ezek a kézi adatok maradnak.</p>
     </div>
 
     <div class="row" style="margin-top: 8px;">
@@ -412,8 +547,11 @@
     </div>
   </dialog>
 
+  <input id="avatarInput" class="hidden" type="file" accept="image/*" />
+  <input id="coverInput" class="hidden" type="file" accept="image/*" />
+
   <script>
-    const STORE_KEY = "outfit_app_state_v2";
+    const STORE_KEY = "outfit_app_state_v3";
 
     const state = loadState();
     let currentPage = "stylingPage";
@@ -426,10 +564,8 @@
 
     const aiStatus = document.getElementById("aiStatus");
     const outfitView = document.getElementById("outfitView");
-
-    const itemsGrid = document.getElementById("itemsGrid");
+    const itemsByCategory = document.getElementById("itemsByCategory");
     const savedOutfits = document.getElementById("savedOutfits");
-    const plannerList = document.getElementById("plannerList");
 
     init();
 
@@ -438,10 +574,15 @@
       bindMode();
       bindActions();
       setTodayDate();
+      setMonthInput();
       startClock();
       fetchRealWeather();
       renderAll();
       switchPage("stylingPage");
+    }
+
+    function defaultProfile() {
+      return { firstName: "", lastName: "", nickname: "", gender: "female", avatar: "", cover: "" };
     }
 
     function loadState() {
@@ -449,8 +590,10 @@
       if (raw) {
         try {
           const parsed = JSON.parse(raw);
+          const profile = { ...defaultProfile(), ...(parsed.profile || {}) };
+          if (!profile.nickname && parsed.profile?.name) profile.nickname = parsed.profile.name;
           return {
-            profile: parsed.profile || { name: "", gender: "female", avatar: "", cover: "" },
+            profile,
             items: parsed.items || [],
             outfits: parsed.outfits || [],
             planner: parsed.planner || {},
@@ -462,7 +605,7 @@
       }
 
       return {
-        profile: { name: "", gender: "female", avatar: "", cover: "" },
+        profile: defaultProfile(),
         items: [],
         outfits: [],
         planner: {},
@@ -483,12 +626,16 @@
     function bindMode() {
       modeButtons.forEach(btn => {
         btn.addEventListener("click", () => {
+          if (btn.dataset.mode === "2" && state.profile.gender === "male") return;
           modeButtons.forEach(m => m.classList.remove("active"));
           btn.classList.add("active");
           const mode = btn.dataset.mode;
-          currentMode = mode === "dice" ? [2,3,4,5][Math.floor(Math.random()*4)] : Number(mode);
           if (mode === "dice") {
+            const choices = state.profile.gender === "male" ? [3, 4, 5] : [2, 3, 4, 5];
+            currentMode = choices[Math.floor(Math.random() * choices.length)];
             aiStatus.textContent = `🎲 Kocka mód: ${currentMode} részes outfit.`;
+          } else {
+            currentMode = Number(mode);
           }
         });
       });
@@ -498,6 +645,7 @@
       document.getElementById("generateBtn").addEventListener("click", generateOutfit);
       document.getElementById("likeOutfitBtn").addEventListener("click", likeCurrentOutfit);
       document.getElementById("savePlannerBtn").addEventListener("click", savePlannerForDate);
+      document.getElementById("plannerMonth").addEventListener("change", renderPlannerCalendar);
 
       document.getElementById("openUploaderBtn").addEventListener("click", () => {
         document.getElementById("uploadDialog").showModal();
@@ -511,6 +659,9 @@
       document.getElementById("saveUploadBtn").addEventListener("click", handleUploadFromDialog);
 
       document.getElementById("saveProfileBtn").addEventListener("click", saveProfile);
+      document.getElementById("avatarPlusBtn").addEventListener("click", () => document.getElementById("avatarInput").click());
+      document.getElementById("coverPlusBtn").addEventListener("click", () => document.getElementById("coverInput").click());
+
       document.getElementById("avatarInput").addEventListener("change", async e => {
         const file = e.target.files[0];
         if (!file) return;
@@ -518,6 +669,7 @@
         saveState();
         renderProfile();
       });
+
       document.getElementById("coverInput").addEventListener("change", async e => {
         const file = e.target.files[0];
         if (!file) return;
@@ -531,23 +683,42 @@
       currentPage = pageId;
       pages.forEach(page => page.classList.toggle("active", page.id === pageId));
       navButtons.forEach(btn => btn.classList.toggle("active", btn.dataset.page === pageId));
+      document.getElementById("openUploaderBtn").classList.toggle("show", pageId === "wardrobePage");
+      if (pageId === "plannerPage") renderPlannerCalendar();
     }
 
     function renderAll() {
       renderProfile();
       renderItems();
       renderOutfits();
-      renderPlanner();
-      renderStats();
+      renderPlannerCalendar();
+      updateModeVisibility();
       toggleUploadExtra();
     }
 
+    function getDisplayName() {
+      const nick = state.profile.nickname?.trim();
+      if (nick) return nick;
+      const combo = `${state.profile.lastName || ""} ${state.profile.firstName || ""}`.trim();
+      return combo || "Név nélkül";
+    }
+
+    function wardrobeTitleText() {
+      const name = getDisplayName();
+      if (name === "Név nélkül") return "Név nélkül wardrobe-ja";
+      return `${name}'s wardrobe`;
+    }
+
     function renderProfile() {
-      document.getElementById("nameInput").value = state.profile.name || "";
+      document.getElementById("lastNameInput").value = state.profile.lastName || "";
+      document.getElementById("firstNameInput").value = state.profile.firstName || "";
+      document.getElementById("nicknameInput").value = state.profile.nickname || "";
       document.getElementById("genderInput").value = state.profile.gender || "female";
 
-      document.getElementById("profileNameLabel").textContent = state.profile.name || "Név nélkül";
+      document.getElementById("profileNameLabel").textContent = wardrobeTitleText();
       document.getElementById("profileGenderLabel").textContent = state.profile.gender === "male" ? "férfi" : "nő";
+      document.getElementById("wardrobeHeader").textContent = wardrobeTitleText();
+      document.getElementById("wardrobeTopRight").textContent = wardrobeTitleText();
 
       const avatarBox = document.getElementById("avatarBox");
       avatarBox.style.backgroundImage = state.profile.avatar ? `url(${state.profile.avatar})` : "none";
@@ -557,41 +728,64 @@
     }
 
     function saveProfile() {
-      state.profile.name = document.getElementById("nameInput").value.trim();
+      state.profile.lastName = document.getElementById("lastNameInput").value.trim();
+      state.profile.firstName = document.getElementById("firstNameInput").value.trim();
+      state.profile.nickname = document.getElementById("nicknameInput").value.trim();
       state.profile.gender = document.getElementById("genderInput").value;
+      if (!state.profile.nickname) {
+        state.profile.nickname = `${state.profile.lastName} ${state.profile.firstName}`.trim();
+      }
       saveState();
+      updateModeVisibility();
       renderProfile();
+      renderItems();
       alert("Profil elmentve.");
     }
 
-    function renderStats() {
-      document.getElementById("itemsCount").textContent = state.items.length;
-      document.getElementById("outfitsCount").textContent = state.outfits.length;
-      const likedItems = state.items.filter(x => x.liked).length;
-      const likedOutfits = state.outfits.filter(x => x.liked).length;
-      document.getElementById("likedCount").textContent = likedItems + likedOutfits;
+    function categoryConfig() {
+      const base = [
+        { label: "Póló", types: ["felso"] },
+        { label: "Nadrág", types: ["also", "szoknya"] },
+        { label: "Pulcsi", types: ["pulcsi"] },
+        { label: "Kabát", types: ["kabat"] },
+        { label: "Cipő", types: ["cipo"] }
+      ];
+      if (state.profile.gender === "female") {
+        base.splice(4, 0, { label: "Ruha", types: ["dress"] });
+      }
+      return base;
     }
 
     function renderItems() {
-      if (!state.items.length) {
-        itemsGrid.innerHTML = `<p class="muted">Még nincs feltöltött ruha.</p>`;
-        return;
-      }
+      const allowed = getAllowedItemsByGender();
+      const groups = categoryConfig();
 
-      itemsGrid.innerHTML = state.items.map(item => `
-        <article class="piece">
-          <img src="${item.image}" alt="${item.type}" />
-          <div class="meta">
-            <strong>${item.type}</strong><br />
-            stílus: ${item.style} · szín: ${item.color}<br />
-            cél: ${genderLabel(item.targetGender)}
-            <div class="row" style="margin-top:6px;">
-              <button class="btn ghost" onclick="toggleItemLike('${item.id}')">${item.liked ? "💔 unlike" : "❤️ like"}</button>
-              <button class="btn ghost" onclick="toggleItemHidden('${item.id}')">${item.hidden ? "🙈 unhide" : "🙈 hide"}</button>
+      itemsByCategory.innerHTML = groups.map(group => {
+        const items = allowed.filter(item => group.types.includes(item.type));
+        if (!items.length) {
+          return `<section class="category-group"><h4>${group.label}</h4><p class="muted">Nincs feltöltött elem.</p></section>`;
+        }
+        return `
+          <section class="category-group">
+            <h4>${group.label}</h4>
+            <div class="item-row">
+              ${items.map(item => `
+                <article class="item-card">
+                  <img src="${item.image}" alt="${item.type}" />
+                  <div class="meta">
+                    <strong>${item.type}</strong><br />
+                    stílus: ${item.style} · szín: ${item.color}
+                    <div class="row" style="margin-top:6px;">
+                      <button class="btn ghost" onclick="toggleItemLike('${item.id}')">${item.liked ? "💔 unlike" : "❤️ like"}</button>
+                      <button class="btn ghost" onclick="toggleItemHidden('${item.id}')">${item.hidden ? "🙈 unhide" : "🙈 hide"}</button>
+                    </div>
+                  </div>
+                </article>
+              `).join("")}
             </div>
-          </div>
-        </article>
-      `).join("");
+          </section>
+        `;
+      }).join("");
     }
 
     function renderOutfits() {
@@ -602,41 +796,15 @@
 
       savedOutfits.innerHTML = state.outfits.map(outfit => {
         const pieces = outfit.pieces.map(id => state.items.find(x => x.id === id)).filter(Boolean);
-        if (!pieces.length) return "";
         return `
-          <article class="piece">
-            <img src="${pieces[0].image}" alt="outfit" />
-            <div class="meta">
-              ${outfit.mode} részes · ${new Date(outfit.createdAt).toLocaleDateString("hu-HU")}<br />
-              ${outfit.liked ? "❤️ kedvenc" : ""}
-              <div class="row" style="margin-top:6px;">
-                <button class="btn ghost" onclick="toggleOutfitLike('${outfit.id}')">${outfit.liked ? "💔 unlike" : "❤️ like"}</button>
-                <button class="btn ghost" onclick="toggleOutfitHidden('${outfit.id}')">${outfit.hidden ? "🙈 unhide" : "🙈 hide"}</button>
-              </div>
+          <article class="category-group">
+            <h4>${outfit.mode} részes · ${new Date(outfit.createdAt).toLocaleDateString("hu-HU")}</h4>
+            <div class="item-row">
+              ${pieces.map(piece => `<img class="mini-piece" style="height:90px; width:90px;" src="${piece.image}" alt="${piece.type}" />`).join("")}
             </div>
-          </article>
-        `;
-      }).join("");
-    }
-
-    function renderPlanner() {
-      const dates = Object.keys(state.planner).sort();
-      if (!dates.length) {
-        plannerList.innerHTML = `<p class="muted">Még nincs naptárbejegyzés.</p>`;
-        return;
-      }
-
-      plannerList.innerHTML = dates.map(date => {
-        const outfitId = state.planner[date];
-        const outfit = state.outfits.find(o => o.id === outfitId);
-        if (!outfit) return "";
-        const piece = state.items.find(i => i.id === outfit.pieces[0]);
-        return `
-          <article class="piece">
-            <img src="${piece ? piece.image : ""}" alt="planner outfit" />
-            <div class="meta">
-              <strong>${date}</strong><br />
-              ${outfit.mode} részes outfit
+            <div class="row" style="margin-top:6px;">
+              <button class="btn ghost" onclick="toggleOutfitLike('${outfit.id}')">${outfit.liked ? "💔 unlike" : "❤️ like"}</button>
+              <button class="btn ghost" onclick="toggleOutfitHidden('${outfit.id}')">${outfit.hidden ? "🙈 unhide" : "🙈 hide"}</button>
             </div>
           </article>
         `;
@@ -650,14 +818,70 @@
       input.value = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
     }
 
+    function setMonthInput() {
+      const monthInput = document.getElementById("plannerMonth");
+      const now = new Date();
+      monthInput.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    }
+
     function savePlannerForDate() {
       const date = document.getElementById("plannerDate").value;
       if (!date) return alert("Válassz dátumot.");
       if (!state.lastOutfitId) return alert("Nincs mit menteni. Generálj outfitet Styling alatt.");
       state.planner[date] = state.lastOutfitId;
       saveState();
-      renderPlanner();
+      renderPlannerCalendar();
       alert("Outfit mentve a Plannerbe.");
+    }
+
+    function renderPlannerCalendar() {
+      const holder = document.getElementById("plannerCalendar");
+      const value = document.getElementById("plannerMonth").value;
+      if (!value) return;
+
+      const [year, month] = value.split("-").map(Number);
+      const first = new Date(year, month - 1, 1);
+      const startWeekDay = (first.getDay() + 6) % 7;
+      const daysInMonth = new Date(year, month, 0).getDate();
+      const todayIso = new Date().toISOString().slice(0, 10);
+
+      let html = `<div class="calendar-grid">`;
+      ["H", "K", "Sze", "Cs", "P", "Szo", "V"].forEach(d => {
+        html += `<div class="calendar-head">${d}</div>`;
+      });
+
+      const totalCells = Math.ceil((startWeekDay + daysInMonth) / 7) * 7;
+      for (let i = 0; i < totalCells; i++) {
+        const dayNum = i - startWeekDay + 1;
+        if (dayNum < 1 || dayNum > daysInMonth) {
+          html += `<div class="day-cell empty-day"></div>`;
+          continue;
+        }
+
+        const iso = `${year}-${String(month).padStart(2, "0")}-${String(dayNum).padStart(2, "0")}`;
+        const outfitId = state.planner[iso];
+        const isToday = iso === todayIso;
+        const outfit = state.outfits.find(o => o.id === outfitId);
+
+        let images = "";
+        if (outfit) {
+          const pieces = outfit.pieces
+            .map(id => state.items.find(i => i.id === id))
+            .filter(Boolean)
+            .slice(0, 4);
+          images = pieces.map(p => `<img class="mini-piece" src="${p.image}" alt="${p.type}" />`).join("");
+        }
+
+        html += `
+          <div class="day-cell ${isToday ? "today" : ""}">
+            <div class="day-number">${dayNum}</div>
+            ${images || "<span class='muted'>—</span>"}
+          </div>
+        `;
+      }
+
+      html += `</div>`;
+      holder.innerHTML = html;
     }
 
     async function handleUploadFromDialog() {
@@ -703,6 +927,7 @@
       let aiType = document.getElementById("manualType").value;
       let aiStyle = document.getElementById("manualStyle").value;
       let aiOk = true;
+
       try {
         const base64 = await fileToDataUrl(file);
         const aiText = await detectClothingType(base64);
@@ -799,7 +1024,7 @@
       if (["cipo", "cipő"].includes(t)) return "cipo";
       if (["pulcsi", "hoodie"].includes(t)) return "pulcsi";
       if (["kabat", "kabát", "coat"].includes(t)) return "kabat";
-      if (["dress", "egyberuha"].includes(t)) return "dress";
+      if (["dress", "egyberuha", "ruha"].includes(t)) return "dress";
       return "felso";
     }
 
@@ -839,6 +1064,18 @@
       return "neutral";
     }
 
+    function updateModeVisibility() {
+      const mode2 = document.getElementById("mode2Btn");
+      const male = state.profile.gender === "male";
+      mode2.style.display = male ? "none" : "inline-block";
+      if (male && currentMode === 2) {
+        currentMode = 3;
+        modeButtons.forEach(btn => btn.classList.remove("active"));
+        const m3 = [...modeButtons].find(b => b.dataset.mode === "3");
+        if (m3) m3.classList.add("active");
+      }
+    }
+
     function generateOutfit() {
       const allowed = getAllowedItemsByGender().filter(i => !i.hidden);
 
@@ -852,13 +1089,9 @@
       let selected = [];
 
       if (currentMode === 2) {
-        if (state.profile.gender === "female") {
-          if (!dresses.length || !shoes.length) return alert("2 részeshez kell legalább egy egyberuha és egy cipő.");
-          selected = [pick(dresses), pick(shoes)];
-        } else {
-          if (!tops.length || !lowers.length) return alert("2 részeshez kell felső + alsó.");
-          selected = [pick(tops), pick(lowers)];
-        }
+        if (state.profile.gender !== "female") return alert("A 2 részes csak női profilnál érhető el.");
+        if (!dresses.length || !shoes.length) return alert("2 részeshez kell legalább egy ruha és egy cipő.");
+        selected = [pick(dresses), pick(shoes)];
       }
 
       if (currentMode === 3) {
@@ -888,11 +1121,10 @@
       state.outfits.push(currentOutfit);
       state.lastOutfitId = currentOutfit.id;
       saveState();
-      renderStats();
       renderOutfits();
 
       outfitView.innerHTML = selected.map(piece => `
-        <article class="piece">
+        <article class="style-piece">
           <img src="${piece.image}" alt="${piece.type}" />
           <div class="meta">
             <strong>${piece.type}</strong><br />
@@ -908,7 +1140,6 @@
       if (!outfit) return;
       outfit.liked = !outfit.liked;
       saveState();
-      renderStats();
       renderOutfits();
       alert(outfit.liked ? "Outfit likeolva." : "Outfit unlike.");
     }
@@ -935,12 +1166,6 @@
       });
     }
 
-    function genderLabel(value) {
-      if (value === "male") return "férfi";
-      if (value === "female") return "nő";
-      return "unisex";
-    }
-
     function startClock() {
       const clock = document.getElementById("clock");
       const tick = () => {
@@ -955,12 +1180,23 @@
       const weatherEl = document.getElementById("weather");
 
       try {
-        const pos = await new Promise((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000 });
-        });
+        let lat;
+        let lon;
 
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
+        try {
+          const pos = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000 });
+          });
+          lat = pos.coords.latitude;
+          lon = pos.coords.longitude;
+        } catch (geoErr) {
+          const ipRes = await fetch("https://ipapi.co/json/");
+          if (!ipRes.ok) throw new Error("ip fallback failed");
+          const ipData = await ipRes.json();
+          lat = ipData.latitude;
+          lon = ipData.longitude;
+        }
+
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=auto`;
         const res = await fetch(url);
         if (!res.ok) throw new Error("weather fetch failed");
@@ -976,11 +1212,11 @@
 
     function weatherCodeToText(code) {
       if ([0].includes(code)) return "derült";
-      if ([1,2,3].includes(code)) return "felhős";
-      if ([45,48].includes(code)) return "köd";
-      if ([51,53,55,56,57,61,63,65,80,81,82].includes(code)) return "eső";
-      if ([71,73,75,77,85,86].includes(code)) return "hó";
-      if ([95,96,99].includes(code)) return "vihar";
+      if ([1, 2, 3].includes(code)) return "felhős";
+      if ([45, 48].includes(code)) return "köd";
+      if ([51, 53, 55, 56, 57, 61, 63, 65, 80, 81, 82].includes(code)) return "eső";
+      if ([71, 73, 75, 77, 85, 86].includes(code)) return "hó";
+      if ([95, 96, 99].includes(code)) return "vihar";
       return "vegyes";
     }
 
@@ -990,7 +1226,6 @@
       item.liked = !item.liked;
       saveState();
       renderItems();
-      renderStats();
     }
 
     function toggleItemHidden(id) {
@@ -1007,7 +1242,6 @@
       outfit.liked = !outfit.liked;
       saveState();
       renderOutfits();
-      renderStats();
     }
 
     function toggleOutfitHidden(id) {
